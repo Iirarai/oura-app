@@ -8,188 +8,204 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg:        #f7f5f0;
-  --bg2:       #f0ede6;
-  --surface:   #ffffff;
-  --surface2:  #f4f2ed;
-  --border:    #e2ddd4;
-  --border2:   #ccc7bb;
-  --fjord:     #4a7c8e;
-  --fjord-lt:  #e8f2f5;
-  --sage:      #6b8f71;
-  --sage-lt:   #eaf2eb;
-  --birch:     #c4a882;
-  --birch-lt:  #faf3ea;
-  --aurora:    #9b7fb6;
-  --ember:     #c27b5a;
-  --ember-lt:  #fdf0ea;
-  --text:      #2c2a26;
-  --text2:     #6b6760;
-  --muted:     #a09990;
-  --r: 14px;
-  --shadow: 0 2px 20px rgba(44,42,38,0.06);
-  --shadow-lg: 0 8px 40px rgba(44,42,38,0.10);
+  --bg:#f7f5f0; --bg2:#f0ede6; --surface:#ffffff; --surface2:#f4f2ed;
+  --border:#e2ddd4; --border2:#ccc7bb;
+  --fjord:#4a7c8e; --fjord-lt:#e8f2f5;
+  --sage:#6b8f71; --sage-lt:#eaf2eb;
+  --birch:#c4a882; --birch-lt:#faf3ea;
+  --aurora:#9b7fb6; --aurora-lt:#f3eef8;
+  --ember:#c27b5a; --ember-lt:#fdf0ea;
+  --text:#2c2a26; --text2:#6b6760; --muted:#a09990;
+  --r:14px; --shadow:0 2px 20px rgba(44,42,38,0.06); --shadow-lg:0 8px 40px rgba(44,42,38,0.10);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"); opacity:0.4; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");opacity:0.4;}
+.aha-wordmark{font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.18em;color:var(--text);text-transform:lowercase;}
 
-/* ── WORDMARK ── */
-.aha-wordmark {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  color: var(--text);
-  text-transform: lowercase;
-}
+/* SETUP */
+#setup-screen{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;animation:fadeUp 0.8s ease;}
+.setup-hero{text-align:center;margin-bottom:52px;}
+.setup-hero .aha-wordmark{font-size:4rem;display:block;margin-bottom:10px;}
+.setup-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--muted);letter-spacing:0.04em;}
+.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px;width:100%;max-width:440px;box-shadow:var(--shadow-lg);}
+.setup-card h2{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;margin-bottom:8px;}
+.setup-card p{font-size:0.85rem;color:var(--text2);line-height:1.7;margin-bottom:28px;}
+.setup-card a{color:var(--fjord);text-decoration:none;}
+.field-label{display:block;font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.field-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 16px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text);outline:none;margin-bottom:20px;transition:border-color 0.2s,box-shadow 0.2s;}
+.field-input:focus{border-color:var(--fjord);box-shadow:0 0 0 3px rgba(74,124,142,0.1);background:var(--surface);}
+.btn-connect{width:100%;padding:15px;background:var(--fjord);border:none;border-radius:10px;color:white;font-family:'Instrument Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;letter-spacing:0.04em;transition:background 0.2s,transform 0.1s;box-shadow:0 4px 16px rgba(74,124,142,0.25);}
+.btn-connect:hover{background:#3d6b7c;}
+.btn-connect:active{transform:scale(0.99);}
+.btn-connect:disabled{opacity:0.5;cursor:not-allowed;box-shadow:none;}
+.setup-note{margin-top:20px;padding:13px 16px;background:var(--fjord-lt);border-radius:10px;font-size:0.78rem;color:var(--text2);line-height:1.6;}
+.err{background:var(--ember-lt);border:1px solid rgba(194,123,90,0.25);color:var(--ember);border-radius:8px;padding:10px 14px;font-size:0.8rem;margin-top:12px;}
 
-/* ── SETUP ── */
-#setup-screen { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 24px; animation:fadeUp 0.8s ease; }
-.setup-hero { text-align:center; margin-bottom:52px; }
-.setup-hero .aha-wordmark { font-size:4rem; display:block; margin-bottom:10px; }
-.setup-tagline { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.05rem; color:var(--muted); letter-spacing:0.04em; }
-.setup-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:48px; width:100%; max-width:440px; box-shadow:var(--shadow-lg); }
-.setup-card h2 { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:500; margin-bottom:8px; }
-.setup-card p { font-size:0.85rem; color:var(--text2); line-height:1.7; margin-bottom:28px; }
-.setup-card a { color:var(--fjord); text-decoration:none; }
-.setup-card a:hover { text-decoration:underline; }
-.field-label { display:block; font-size:0.7rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
-.field-input { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:13px 16px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text); outline:none; margin-bottom:20px; transition:border-color 0.2s, box-shadow 0.2s; }
-.field-input:focus { border-color:var(--fjord); box-shadow:0 0 0 3px rgba(74,124,142,0.1); background:var(--surface); }
-.btn-connect { width:100%; padding:15px; background:var(--fjord); border:none; border-radius:10px; color:white; font-family:'Instrument Sans',sans-serif; font-size:0.9rem; font-weight:500; cursor:pointer; letter-spacing:0.04em; transition:background 0.2s, transform 0.1s, box-shadow 0.2s; box-shadow:0 4px 16px rgba(74,124,142,0.25); }
-.btn-connect:hover { background:#3d6b7c; }
-.btn-connect:active { transform:scale(0.99); }
-.btn-connect:disabled { opacity:0.5; cursor:not-allowed; box-shadow:none; }
-.setup-note { margin-top:20px; padding:13px 16px; background:var(--fjord-lt); border-radius:10px; font-size:0.78rem; color:var(--text2); line-height:1.6; }
-.err { background:var(--ember-lt); border:1px solid rgba(194,123,90,0.25); color:var(--ember); border-radius:8px; padding:10px 14px; font-size:0.8rem; margin-top:12px; }
+/* LOADING OVERLAY */
+#loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+#loading-overlay .aha-wordmark{font-size:2.5rem;}
+.load-status{font-size:0.82rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.load-bar-outer{width:240px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.load-bar-inner{height:100%;background:var(--fjord);border-radius:2px;transition:width 0.4s ease;}
 
-/* ── APP ── */
-#app-screen { display:none; position:relative; z-index:1; height:100vh; flex-direction:column; }
-.app-header { display:flex; align-items:center; justify-content:space-between; padding:0 32px; height:60px; background:rgba(247,245,240,0.92); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20; }
-.header-logo .aha-wordmark { font-size:1.5rem; }
-.header-nav { display:flex; gap:2px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:3px; }
-.nav-btn { padding:6px 18px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-family:'Instrument Sans',sans-serif; font-size:0.82rem; font-weight:500; cursor:pointer; transition:all 0.15s; }
-.nav-btn:hover { color:var(--text); }
-.nav-btn.active { background:var(--surface); color:var(--text); box-shadow:0 1px 4px rgba(44,42,38,0.08); }
-.header-right { display:flex; align-items:center; gap:10px; }
-.live-badge { display:flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; background:var(--sage-lt); border:1px solid rgba(107,143,113,0.25); font-size:0.72rem; color:var(--sage); font-family:'JetBrains Mono',monospace; }
-.live-dot { width:5px; height:5px; border-radius:50%; background:var(--sage); animation:pulse 2.5s infinite; }
-.btn-sm { padding:6px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text2); font-size:0.78rem; cursor:pointer; font-family:'Instrument Sans',sans-serif; transition:all 0.15s; }
-.btn-sm:hover { color:var(--text); border-color:var(--border2); box-shadow:var(--shadow); }
+/* APP */
+#app-screen{display:none;position:relative;z-index:1;height:100vh;flex-direction:column;}
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:58px;background:rgba(247,245,240,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
+.header-logo .aha-wordmark{font-size:1.4rem;}
+.header-nav{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px;}
+.nav-btn{padding:6px 16px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'Instrument Sans',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.nav-btn:hover{color:var(--text);}
+.nav-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(44,42,38,0.08);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.live-badge{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;background:var(--sage-lt);border:1px solid rgba(107,143,113,0.25);font-size:0.72rem;color:var(--sage);font-family:'JetBrains Mono',monospace;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--sage);animation:pulse 2.5s infinite;}
+.btn-sm{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:0.78rem;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s;}
+.btn-sm:hover{color:var(--text);border-color:var(--border2);}
 
-/* ── VIEWS ── */
-.view { display:none; flex:1; overflow:hidden; }
-.view.active { display:flex; }
+/* VIEWS */
+.view{display:none;flex:1;overflow:hidden;}
+.view.active{display:flex;}
 
-/* ── DASHBOARD ── */
-#view-dashboard { flex-direction:column; overflow-y:auto; padding:36px 36px 48px; gap:28px; background:var(--bg); }
-#view-dashboard::-webkit-scrollbar { width:5px; }
-#view-dashboard::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-.dash-greeting { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:400; color:var(--text); }
-.dash-date { font-size:0.8rem; color:var(--muted); letter-spacing:0.04em; }
-.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-.kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:22px 20px; position:relative; overflow:hidden; box-shadow:var(--shadow); transition:box-shadow 0.2s, transform 0.2s; }
-.kpi-card:hover { box-shadow:var(--shadow-lg); transform:translateY(-1px); }
-.kpi-accent-bar { position:absolute; top:0; left:0; right:0; height:3px; border-radius:3px 3px 0 0; }
-.kpi-label { font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
-.kpi-value { font-family:'Cormorant Garamond',serif; font-size:2.8rem; line-height:1; font-weight:300; margin-bottom:4px; }
-.kpi-sub { font-size:0.75rem; color:var(--text2); }
-.kpi-trend { position:absolute; top:18px; right:16px; font-size:0.72rem; font-weight:500; padding:2px 7px; border-radius:20px; }
-.trend-up { background:var(--sage-lt); color:var(--sage); }
-.trend-down { background:var(--ember-lt); color:var(--ember); }
-.trend-flat { background:var(--surface2); color:var(--muted); }
-.charts-row { display:grid; grid-template-columns:3fr 2fr; gap:14px; }
-.chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:24px; box-shadow:var(--shadow); }
-.chart-header { display:flex; align-items:baseline; gap:10px; margin-bottom:20px; }
-.chart-title { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:500; color:var(--text); }
-.chart-subtitle { font-size:0.72rem; color:var(--muted); }
-.chart-wrap { position:relative; height:170px; }
-.summary-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:28px 32px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
-.summary-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(to bottom, var(--fjord), var(--sage)); }
-.summary-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; }
-.summary-title { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:500; }
-.summary-week { font-size:0.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace; }
-.summary-body { font-size:0.9rem; color:var(--text2); line-height:1.8; }
-.summary-body strong { color:var(--fjord); font-weight:600; }
-.summary-body em { color:var(--sage); font-style:normal; }
-.section-head { display:flex; align-items:center; gap:14px; }
-.section-head-label { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:500; white-space:nowrap; color:var(--text); }
-.section-head-line { flex:1; height:1px; background:var(--border); }
-.recs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-.rec-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:22px; box-shadow:var(--shadow); transition:box-shadow 0.2s, transform 0.2s; }
-.rec-card:hover { box-shadow:var(--shadow-lg); transform:translateY(-2px); }
-.rec-icon { font-size:1.6rem; margin-bottom:12px; display:block; }
-.rec-title { font-size:0.85rem; font-weight:600; margin-bottom:6px; color:var(--text); }
-.rec-body { font-size:0.78rem; color:var(--text2); line-height:1.65; }
-.rec-tag { display:inline-block; margin-top:12px; font-size:0.62rem; padding:2px 9px; border-radius:20px; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.06em; }
-.tag-high { background:var(--ember-lt); color:var(--ember); border:1px solid rgba(194,123,90,0.2); }
-.tag-medium { background:var(--birch-lt); color:var(--birch); border:1px solid rgba(196,168,130,0.3); }
-.tag-low { background:var(--sage-lt); color:var(--sage); border:1px solid rgba(107,143,113,0.2); }
+/* DASHBOARD */
+#view-dashboard{flex-direction:column;overflow-y:auto;padding:28px 32px 48px;gap:24px;background:var(--bg);}
+#view-dashboard::-webkit-scrollbar{width:5px;}
+#view-dashboard::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.dash-top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.dash-greeting{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;}
+.dash-date{font-size:0.8rem;color:var(--muted);letter-spacing:0.04em;}
 
-/* ── CHAT ── */
-#view-chat { flex-direction:row; }
-.chat-sidebar { width:256px; flex-shrink:0; border-right:1px solid var(--border); background:var(--surface); overflow-y:auto; padding:24px 20px; }
-.chat-sidebar::-webkit-scrollbar { width:3px; }
-.chat-sidebar::-webkit-scrollbar-thumb { background:var(--border); }
-.sidebar-section { margin-bottom:28px; }
-.sidebar-sec-label { font-size:0.65rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
-.mini-stat { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-radius:9px; background:var(--surface2); margin-bottom:6px; }
-.mini-stat-name { font-size:0.78rem; color:var(--text2); }
-.mini-stat-val { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:500; }
-.chip-cloud { display:flex; flex-wrap:wrap; gap:6px; }
-.chip { font-size:0.7rem; padding:5px 11px; border-radius:20px; background:var(--surface2); border:1px solid var(--border); color:var(--text2); cursor:pointer; font-family:'Instrument Sans',sans-serif; transition:all 0.15s; }
-.chip:hover { background:var(--fjord-lt); border-color:rgba(74,124,142,0.3); color:var(--fjord); }
-.chat-main { flex:1; display:flex; flex-direction:column; overflow:hidden; background:var(--bg); }
-.range-bar { padding:10px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; background:rgba(247,245,240,0.9); }
-.range-label { font-size:0.68rem; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:0.09em; }
-.range-btn { font-size:0.72rem; padding:4px 13px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text2); cursor:pointer; font-family:'Instrument Sans',sans-serif; transition:all 0.15s; }
-.range-btn.active { background:var(--fjord); border-color:var(--fjord); color:white; }
-.range-btn:hover:not(.active) { background:var(--surface); border-color:var(--border2); color:var(--text); }
-.messages { flex:1; overflow-y:auto; padding:28px 32px; display:flex; flex-direction:column; gap:20px; }
-.messages::-webkit-scrollbar { width:4px; }
-.messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-.msg { display:flex; gap:12px; animation:fadeUp 0.3s ease; max-width:820px; }
-.msg.user { flex-direction:row-reverse; align-self:flex-end; }
-.msg-av { width:32px; height:32px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:500; margin-top:2px; }
-.msg-av.ai { background:var(--fjord-lt); border:1px solid rgba(74,124,142,0.2); font-family:'Cormorant Garamond',serif; font-size:0.9rem; color:var(--fjord); letter-spacing:0.05em; }
-.msg-av.me { background:var(--surface2); border:1px solid var(--border); color:var(--muted); font-size:0.7rem; }
-.msg-bubble { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px 18px; font-size:0.875rem; line-height:1.75; box-shadow:var(--shadow); }
-.msg.user .msg-bubble { background:var(--fjord); border-color:var(--fjord); color:white; box-shadow:0 4px 14px rgba(74,124,142,0.25); }
-.msg-bubble strong { color:var(--fjord); font-weight:600; }
-.msg-bubble em { color:var(--sage); font-style:normal; }
-.msg-bubble p { margin-bottom:8px; }
-.msg-bubble p:last-child { margin-bottom:0; }
-.thinking-bubble { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:10px; color:var(--muted); font-size:0.82rem; box-shadow:var(--shadow); }
-.dots { display:flex; gap:4px; }
-.dot { width:5px; height:5px; border-radius:50%; background:var(--fjord); animation:bounce 1.4s infinite; opacity:0.6; }
-.dot:nth-child(2) { animation-delay:0.2s; }
-.dot:nth-child(3) { animation-delay:0.4s; }
-.empty-chat { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; }
-.empty-chat-wordmark { font-family:'Cormorant Garamond',serif; font-size:3rem; font-weight:300; color:var(--border2); letter-spacing:0.2em; margin-bottom:18px; }
-.empty-chat h3 { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:400; color:var(--text); margin-bottom:8px; }
-.empty-chat p { font-size:0.85rem; color:var(--muted); max-width:300px; line-height:1.7; margin-bottom:28px; }
-.sug-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:420px; width:100%; }
-.sug-btn { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 14px; font-size:0.78rem; color:var(--text2); cursor:pointer; text-align:left; font-family:'Instrument Sans',sans-serif; transition:all 0.2s; line-height:1.4; box-shadow:var(--shadow); }
-.sug-btn:hover { border-color:rgba(74,124,142,0.4); color:var(--fjord); background:var(--fjord-lt); }
-.sug-icon { font-size:1rem; margin-bottom:5px; display:block; }
-.input-bar { padding:16px 24px; border-top:1px solid var(--border); display:flex; gap:10px; align-items:flex-end; background:rgba(247,245,240,0.95); backdrop-filter:blur(12px); }
-textarea { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 16px; font-family:'Instrument Sans',sans-serif; font-size:0.875rem; color:var(--text); resize:none; outline:none; min-height:48px; max-height:130px; line-height:1.5; transition:border-color 0.2s, box-shadow 0.2s; box-shadow:var(--shadow); }
-textarea:focus { border-color:var(--fjord); box-shadow:0 0 0 3px rgba(74,124,142,0.1); }
-textarea::placeholder { color:var(--muted); }
-.send-btn { width:46px; height:46px; border-radius:12px; background:var(--fjord); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; flex-shrink:0; box-shadow:0 4px 12px rgba(74,124,142,0.3); }
-.send-btn:hover { background:#3d6b7c; }
-.send-btn:disabled { opacity:0.4; cursor:not-allowed; box-shadow:none; }
-.send-btn svg { width:17px; height:17px; fill:white; }
-.loading-block { text-align:center; padding:48px; color:var(--muted); font-size:0.85rem; }
-.spinner { width:28px; height:28px; border:2px solid var(--border); border-top-color:var(--fjord); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 14px; }
+/* Range selector on dashboard */
+.dash-range{display:flex;align-items:center;gap:6px;}
+.dash-range-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.09em;}
+.dash-range-btn{font-size:0.72rem;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s;}
+.dash-range-btn.active{background:var(--fjord);border-color:var(--fjord);color:white;}
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
-@keyframes bounce { 0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-5px);} }
-@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.35;} }
-@keyframes spin { to{transform:rotate(360deg);} }
+/* Section */
+.dash-section{display:flex;flex-direction:column;gap:12px;}
+.section-head{display:flex;align-items:center;gap:12px;}
+.section-head-label{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:500;white-space:nowrap;color:var(--text);}
+.section-head-line{flex:1;height:1px;background:var(--border);}
+
+/* KPI cards */
+.kpi-row{display:grid;gap:12px;}
+.kpi-row-5{grid-template-columns:repeat(5,1fr);}
+.kpi-row-4{grid-template-columns:repeat(4,1fr);}
+.kpi-row-3{grid-template-columns:repeat(3,1fr);}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s;}
+.kpi-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.kpi-accent-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;}
+.kpi-label{font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.kpi-value{font-family:'Cormorant Garamond',serif;font-size:2.4rem;line-height:1;font-weight:300;margin-bottom:3px;}
+.kpi-sub{font-size:0.72rem;color:var(--text2);}
+.kpi-trend{position:absolute;top:14px;right:12px;font-size:0.68rem;font-weight:500;padding:2px 7px;border-radius:20px;}
+.trend-up{background:var(--sage-lt);color:var(--sage);}
+.trend-down{background:var(--ember-lt);color:var(--ember);}
+.trend-flat{background:var(--surface2);color:var(--muted);}
+
+/* Charts */
+.charts-grid{display:grid;gap:12px;}
+.charts-2{grid-template-columns:1fr 1fr;}
+.charts-3{grid-template-columns:2fr 1fr 1fr;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.chart-header{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;}
+.chart-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:500;color:var(--text);}
+.chart-sub{font-size:0.7rem;color:var(--muted);}
+.chart-wrap{position:relative;height:160px;}
+
+/* Summary */
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.summary-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--fjord),var(--sage));}
+.summary-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+.summary-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:500;}
+.summary-week{font-size:0.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.summary-body{font-size:0.875rem;color:var(--text2);line-height:1.8;}
+.summary-body strong{color:var(--fjord);font-weight:600;}
+.summary-body em{color:var(--sage);font-style:normal;}
+
+/* Rec cards */
+.recs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s;}
+.rec-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+.rec-icon{font-size:1.4rem;margin-bottom:10px;display:block;}
+.rec-title{font-size:0.82rem;font-weight:600;margin-bottom:5px;}
+.rec-body{font-size:0.76rem;color:var(--text2);line-height:1.6;}
+.rec-tag{display:inline-block;margin-top:10px;font-size:0.6rem;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;}
+.tag-high{background:var(--ember-lt);color:var(--ember);border:1px solid rgba(194,123,90,0.2);}
+.tag-medium{background:var(--birch-lt);color:var(--birch);border:1px solid rgba(196,168,130,0.3);}
+.tag-low{background:var(--sage-lt);color:var(--sage);border:1px solid rgba(107,143,113,0.2);}
+
+/* CHAT */
+#view-chat{flex-direction:row;}
+.chat-sidebar{width:250px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:20px 16px;}
+.chat-sidebar::-webkit-scrollbar{width:3px;}
+.chat-sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.sidebar-section{margin-bottom:24px;}
+.sidebar-sec-label{font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.mini-stat{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;background:var(--surface2);margin-bottom:5px;}
+.mini-stat-name{font-size:0.75rem;color:var(--text2);}
+.mini-stat-val{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:500;}
+.chip-cloud{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{font-size:0.68rem;padding:4px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s;}
+.chip:hover{background:var(--fjord-lt);border-color:rgba(74,124,142,0.3);color:var(--fjord);}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.range-bar{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:rgba(247,245,240,0.9);}
+.range-label{font-size:0.68rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.09em;}
+.range-btn{font-size:0.72rem;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s;}
+.range-btn.active{background:var(--fjord);border-color:var(--fjord);color:white;}
+.range-btn:hover:not(.active){background:var(--surface);border-color:var(--border2);color:var(--text);}
+.messages{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:18px;}
+.messages::-webkit-scrollbar{width:4px;}
+.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.msg{display:flex;gap:10px;animation:fadeUp 0.3s ease;max-width:820px;}
+.msg.user{flex-direction:row-reverse;align-self:flex-end;}
+.msg-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:500;margin-top:2px;}
+.msg-av.ai{background:var(--fjord-lt);border:1px solid rgba(74,124,142,0.2);font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:var(--fjord);letter-spacing:0.05em;}
+.msg-av.me{background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:0.68rem;}
+.msg-bubble{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 16px;font-size:0.875rem;line-height:1.75;box-shadow:var(--shadow);}
+.msg.user .msg-bubble{background:var(--fjord);border-color:var(--fjord);color:white;box-shadow:0 4px 14px rgba(74,124,142,0.25);}
+.msg-bubble strong{color:var(--fjord);font-weight:600;}
+.msg-bubble em{color:var(--sage);font-style:normal;}
+.msg-bubble p{margin-bottom:8px;}
+.msg-bubble p:last-child{margin-bottom:0;}
+.thinking-bubble{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.82rem;box-shadow:var(--shadow);}
+.dots{display:flex;gap:4px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--fjord);animation:bounce 1.4s infinite;opacity:0.6;}
+.dot:nth-child(2){animation-delay:0.2s;}
+.dot:nth-child(3){animation-delay:0.4s;}
+.empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;}
+.empty-chat-wordmark{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--border2);letter-spacing:0.2em;margin-bottom:16px;}
+.empty-chat h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--text);margin-bottom:8px;}
+.empty-chat p{font-size:0.85rem;color:var(--muted);max-width:300px;line-height:1.7;margin-bottom:24px;}
+.sug-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px;width:100%;}
+.sug-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:0.76rem;color:var(--text2);cursor:pointer;text-align:left;font-family:'Instrument Sans',sans-serif;transition:all 0.2s;line-height:1.4;box-shadow:var(--shadow);}
+.sug-btn:hover{border-color:rgba(74,124,142,0.4);color:var(--fjord);background:var(--fjord-lt);}
+.sug-icon{font-size:0.95rem;margin-bottom:4px;display:block;}
+.input-bar{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;background:rgba(247,245,240,0.95);backdrop-filter:blur(12px);}
+textarea{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;font-family:'Instrument Sans',sans-serif;font-size:0.875rem;color:var(--text);resize:none;outline:none;min-height:46px;max-height:130px;line-height:1.5;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:var(--shadow);}
+textarea:focus{border-color:var(--fjord);box-shadow:0 0 0 3px rgba(74,124,142,0.1);}
+textarea::placeholder{color:var(--muted);}
+.send-btn{width:44px;height:44px;border-radius:11px;background:var(--fjord);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;flex-shrink:0;box-shadow:0 4px 12px rgba(74,124,142,0.3);}
+.send-btn:hover{background:#3d6b7c;}
+.send-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+.send-btn svg{width:16px;height:16px;fill:white;}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--fjord);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+.loading-inline{text-align:center;padding:40px;color:var(--muted);font-size:0.85rem;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-5px);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <span class="aha-wordmark" style="font-size:2.5rem">aha</span>
+  <div class="load-bar-outer"><div class="load-bar-inner" id="load-bar" style="width:0%"></div></div>
+  <div class="load-status" id="load-status">Connecting to Oura…</div>
+</div>
 
 <!-- SETUP -->
 <div id="setup-screen">
@@ -201,7 +217,7 @@ textarea::placeholder { color:var(--muted); }
     <h2>Connect your Oura Ring</h2>
     <p>Enter your personal access token from <a href="https://cloud.ouraring.com/personal-access-tokens" target="_blank">cloud.ouraring.com</a> to begin.</p>
     <label class="field-label">Oura Personal Access Token</label>
-    <input class="field-input" type="password" id="oura-token" placeholder="Your Oura token…" />
+    <input class="field-input" type="password" id="oura-token" placeholder="Your Oura token…"/>
     <button class="btn-connect" id="connect-btn" onclick="connectApp()">Begin</button>
     <div id="setup-error"></div>
     <div class="setup-note">🔒 Your token is stored only in your browser session and sent only to Oura's official API.</div>
@@ -217,74 +233,128 @@ textarea::placeholder { color:var(--muted); }
       <button class="nav-btn" onclick="switchView('chat',this)">Chat</button>
     </div>
     <div class="header-right">
-      <div class="live-badge"><div class="live-dot"></div>Live</div>
-      <button class="btn-sm" onclick="refreshData()">↻ Refresh</button>
+      <div class="live-badge"><div class="live-dot"></div><span id="data-range-label">90 days</span></div>
+      <button class="btn-sm" onclick="refreshAll()">↻ Refresh</button>
       <button class="btn-sm" onclick="logout()">Disconnect</button>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- DASHBOARD VIEW -->
   <div class="view active" id="view-dashboard">
-    <div>
-      <div class="dash-greeting" id="dash-greeting">Good morning</div>
-      <div class="dash-date" id="dash-date"></div>
-    </div>
-    <div class="kpi-row" id="kpi-row">
-      <div class="loading-block" style="grid-column:span 4"><div class="spinner"></div>Loading your data…</div>
-    </div>
-    <div class="charts-row" id="charts-row" style="display:none">
-      <div class="chart-card">
-        <div class="chart-header"><div class="chart-title">Sleep Score</div><div class="chart-subtitle">14 days</div></div>
-        <div class="chart-wrap"><canvas id="chart-sleep"></canvas></div>
+
+    <div class="dash-top">
+      <div>
+        <div class="dash-greeting" id="dash-greeting">Good morning</div>
+        <div class="dash-date" id="dash-date"></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-header"><div class="chart-title">Readiness & HRV</div><div class="chart-subtitle">14 days</div></div>
-        <div class="chart-wrap"><canvas id="chart-hrv"></canvas></div>
+      <div class="dash-range">
+        <span class="dash-range-label">View</span>
+        <button class="dash-range-btn active" onclick="setDashRange(7,this)">7d</button>
+        <button class="dash-range-btn" onclick="setDashRange(30,this)">30d</button>
+        <button class="dash-range-btn" onclick="setDashRange(90,this)">90d</button>
       </div>
     </div>
-    <div class="summary-card" id="summary-card" style="display:none">
+
+    <!-- SLEEP -->
+    <div class="dash-section">
+      <div class="section-head"><span class="section-head-label">Sleep</span><div class="section-head-line"></div></div>
+      <div class="kpi-row kpi-row-5" id="sleep-kpis"><div class="loading-inline" style="grid-column:span 5"><div class="spinner"></div></div></div>
+      <div class="charts-grid charts-2" id="sleep-charts" style="display:none">
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Sleep Score</div><div class="chart-sub" id="sleep-chart-sub"></div></div><div class="chart-wrap"><canvas id="chart-sleep-score"></canvas></div></div>
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Sleep Stages</div><div class="chart-sub">avg breakdown</div></div><div class="chart-wrap"><canvas id="chart-sleep-stages"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- READINESS & HRV -->
+    <div class="dash-section">
+      <div class="section-head"><span class="section-head-label">Readiness & HRV</span><div class="section-head-line"></div></div>
+      <div class="kpi-row kpi-row-4" id="readiness-kpis"><div class="loading-inline" style="grid-column:span 4"><div class="spinner"></div></div></div>
+      <div class="charts-grid charts-2" id="readiness-charts" style="display:none">
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Readiness Score</div><div class="chart-sub" id="readiness-chart-sub"></div></div><div class="chart-wrap"><canvas id="chart-readiness"></canvas></div></div>
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">HRV Balance</div><div class="chart-sub"></div></div><div class="chart-wrap"><canvas id="chart-hrv"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- HEART RATE -->
+    <div class="dash-section">
+      <div class="section-head"><span class="section-head-label">Heart Rate</span><div class="section-head-line"></div></div>
+      <div class="kpi-row kpi-row-3" id="hr-kpis"><div class="loading-inline" style="grid-column:span 3"><div class="spinner"></div></div></div>
+      <div class="charts-grid" style="grid-template-columns:1fr" id="hr-charts" style="display:none">
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Resting Heart Rate</div><div class="chart-sub">daily avg</div></div><div class="chart-wrap"><canvas id="chart-rhr"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="dash-section">
+      <div class="section-head"><span class="section-head-label">Activity</span><div class="section-head-line"></div></div>
+      <div class="kpi-row kpi-row-4" id="activity-kpis"><div class="loading-inline" style="grid-column:span 4"><div class="spinner"></div></div></div>
+      <div class="charts-grid charts-2" id="activity-charts" style="display:none">
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Daily Steps</div><div class="chart-sub"></div></div><div class="chart-wrap"><canvas id="chart-steps"></canvas></div></div>
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Activity Score</div><div class="chart-sub"></div></div><div class="chart-wrap"><canvas id="chart-activity"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- BODY TEMPERATURE -->
+    <div class="dash-section">
+      <div class="section-head"><span class="section-head-label">Body Temperature</span><div class="section-head-line"></div></div>
+      <div class="kpi-row kpi-row-3" id="temp-kpis"><div class="loading-inline" style="grid-column:span 3"><div class="spinner"></div></div></div>
+      <div class="charts-grid" style="grid-template-columns:1fr" id="temp-charts">
+        <div class="chart-card"><div class="chart-header"><div class="chart-title">Temperature Deviation</div><div class="chart-sub">°C from baseline</div></div><div class="chart-wrap"><canvas id="chart-temp"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- SPO2 -->
+    <div class="dash-section" id="spo2-section">
+      <div class="section-head"><span class="section-head-label">Blood Oxygen (SpO₂)</span><div class="section-head-line"></div></div>
+      <div class="kpi-row kpi-row-3" id="spo2-kpis"><div class="loading-inline" style="grid-column:span 3"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- WEEKLY SUMMARY -->
+    <div class="summary-card" id="summary-card">
       <div class="summary-header">
-        <div class="summary-title">This Week</div>
+        <div class="summary-title">Weekly Summary</div>
         <div class="summary-week" id="summary-week"></div>
       </div>
       <div class="summary-body" id="summary-body">
         <div style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.85rem">
           <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-          Composing your summary…
+          &nbsp;Composing your summary…
         </div>
       </div>
     </div>
-    <div id="recs-section" style="display:none">
-      <div class="section-head">
-        <span class="section-head-label">Recommendations</span>
-        <div class="section-head-line"></div>
-      </div>
-      <div class="recs-grid" id="recs-grid"><div class="loading-block"><div class="spinner"></div></div></div>
-    </div>
-  </div>
 
-  <!-- CHAT -->
+    <!-- RECOMMENDATIONS -->
+    <div class="dash-section">
+      <div class="section-head"><span class="section-head-label">Recommendations</span><div class="section-head-line"></div></div>
+      <div class="recs-grid" id="recs-grid"><div class="loading-inline" style="grid-column:span 3"><div class="spinner"></div></div></div>
+    </div>
+
+  </div><!-- end dashboard -->
+
+  <!-- CHAT VIEW -->
   <div class="view" id="view-chat">
     <div class="chat-sidebar" id="chat-sidebar">
-      <div class="loading-block"><div class="spinner"></div></div>
+      <div class="loading-inline"><div class="spinner"></div></div>
     </div>
     <div class="chat-main">
       <div class="range-bar">
-        <span class="range-label">Range</span>
-        <button class="range-btn active" onclick="setRange(7,this)">7 days</button>
-        <button class="range-btn" onclick="setRange(14,this)">14 days</button>
-        <button class="range-btn" onclick="setRange(30,this)">30 days</button>
+        <span class="range-label">Context</span>
+        <button class="range-btn active" onclick="setChatRange(7,this)">7 days</button>
+        <button class="range-btn" onclick="setChatRange(30,this)">30 days</button>
+        <button class="range-btn" onclick="setChatRange(90,this)">90 days</button>
       </div>
       <div class="messages" id="messages">
         <div class="empty-chat" id="empty-chat">
           <div class="empty-chat-wordmark">aha</div>
           <h3>Ask me anything</h3>
-          <p>Your data is ready. Ask about sleep, recovery, HRV — or anything on your mind.</p>
+          <p>90 days of your health data is loaded. Ask about sleep, HRV, temperature trends, activity — anything.</p>
           <div class="sug-grid">
-            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🌙</span>How was my sleep this week?</button>
-            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">💚</span>What does my HRV trend mean?</button>
-            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">📈</span>Which nights did I sleep best?</button>
-            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🎯</span>Top tip to improve my recovery?</button>
+            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🌙</span>How has my sleep been this month?</button>
+            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">💚</span>What does my HRV trend say?</button>
+            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🌡️</span>Any unusual temperature patterns?</button>
+            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">📈</span>What's my overall health trend?</button>
+            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🏃</span>How active have I been lately?</button>
+            <button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🎯</span>What's my biggest area to improve?</button>
           </div>
         </div>
       </div>
@@ -296,53 +366,113 @@ textarea::placeholder { color:var(--muted); }
       </div>
     </div>
   </div>
-</div>
+
+</div><!-- end app -->
 
 <script>
-const ANTHROPIC_KEY = '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';
+// ═══════════════════════════════════════
+// CONFIG — paste your Anthropic API key here
+// ═══════════════════════════════════════
+const ANTHROPIC_KEY = 'PASTE_YOUR_KEY_HERE';
 
-let ouraToken='', healthData={}, chatHistory=[], days=7, isThinking=false, charts={};
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let ouraToken='', healthData={}, chatHistory=[], chatDays=7, dashDays=7, isThinking=false, charts={};
+const PROXY='https://corsproxy.io/?url=', enc=encodeURIComponent;
 
-function setGreeting() {
-  const h=new Date().getHours();
-  document.getElementById('dash-greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const d=new Date(), e=new Date(d); e.setDate(d.getDate()-6);
-  document.getElementById('summary-week').textContent=`${e.toLocaleDateString('en',{month:'short',day:'numeric'})} – ${d.toLocaleDateString('en',{month:'short',day:'numeric'})}`;
-}
-
+// ═══════════════════════════════════════
+// SETUP & DATA LOADING
+// ═══════════════════════════════════════
 async function connectApp() {
   ouraToken=document.getElementById('oura-token').value.trim();
   const errEl=document.getElementById('setup-error'); errEl.innerHTML='';
-  if (!ouraToken){errEl.innerHTML='<div class="err">Please enter your Oura token.</div>';return;}
+  if(!ouraToken){errEl.innerHTML='<div class="err">Please enter your Oura token.</div>';return;}
   const btn=document.getElementById('connect-btn'); btn.disabled=true; btn.textContent='Connecting…';
   try {
-    await loadOuraData();
     document.getElementById('setup-screen').style.display='none';
+    document.getElementById('loading-overlay').style.display='flex';
+    await loadAllData();
+    document.getElementById('loading-overlay').style.display='none';
     document.getElementById('app-screen').style.display='flex';
-    setGreeting(); renderDashboard(); renderChatSidebar();
+    initGreeting();
+    renderDashboard();
+    renderChatSidebar();
   } catch(e) {
+    document.getElementById('loading-overlay').style.display='none';
+    document.getElementById('setup-screen').style.display='flex';
     errEl.innerHTML=`<div class="err">❌ ${e.message}</div>`;
     btn.disabled=false; btn.textContent='Begin';
   }
 }
 
-async function loadOuraData() {
-  const end=new Date(), start=new Date(); start.setDate(start.getDate()-35);
-  const s=start.toISOString().split('T')[0], e=end.toISOString().split('T')[0];
-  const h={'Authorization':`Bearer ${ouraToken}`};
-  const P='https://corsproxy.io/?url=', enc=encodeURIComponent;
-  const [r1,r2]=await Promise.all([
-    fetch(`${P}${enc(`https://api.ouraring.com/v2/usercollection/sleep?start_date=${s}&end_date=${e}`)}`,{headers:h}),
-    fetch(`${P}${enc(`https://api.ouraring.com/v2/usercollection/daily_readiness?start_date=${s}&end_date=${e}`)}`,{headers:h}),
-  ]);
-  if (!r1.ok) throw new Error('Could not connect to Oura. Please check your token and try again.');
-  const [d1,d2]=await Promise.all([r1.json(),r2.json()]);
-  healthData={sleep:d1.data||[], readiness:d2.data||[], loadedAt:new Date().toISOString()};
+function setLoadStatus(msg, pct) {
+  document.getElementById('load-status').textContent=msg;
+  document.getElementById('load-bar').style.width=pct+'%';
 }
 
-async function refreshData() {
-  try{await loadOuraData();renderDashboard();renderChatSidebar();}catch(e){alert('Refresh failed: '+e.message);}
+async function loadAllData() {
+  const end=new Date(), start=new Date(); start.setDate(start.getDate()-92);
+  const s=start.toISOString().split('T')[0], e=end.toISOString().split('T')[0];
+  const h={'Authorization':`Bearer ${ouraToken}`};
+
+  const endpoints = [
+    {key:'dailySleep',   url:`https://api.ouraring.com/v2/usercollection/daily_sleep?start_date=${s}&end_date=${e}`,      label:'Sleep scores…'},
+    {key:'sleep',        url:`https://api.ouraring.com/v2/usercollection/sleep?start_date=${s}&end_date=${e}`,             label:'Sleep sessions…'},
+    {key:'readiness',    url:`https://api.ouraring.com/v2/usercollection/daily_readiness?start_date=${s}&end_date=${e}`,   label:'Readiness…'},
+    {key:'activity',     url:`https://api.ouraring.com/v2/usercollection/daily_activity?start_date=${s}&end_date=${e}`,    label:'Activity…'},
+    {key:'spo2',         url:`https://api.ouraring.com/v2/usercollection/daily_spo2?start_date=${s}&end_date=${e}`,        label:'Blood oxygen…'},
+    {key:'heartrate',    url:`https://api.ouraring.com/v2/usercollection/heartrate?start_datetime=${s}T00:00:00&end_datetime=${e}T23:59:59`, label:'Heart rate…'},
+  ];
+
+  healthData={loadedAt:new Date().toISOString()};
+
+  for(let i=0;i<endpoints.length;i++) {
+    const ep=endpoints[i];
+    setLoadStatus(ep.label, Math.round((i/endpoints.length)*90));
+    try {
+      const res=await fetch(`${PROXY}${enc(ep.url)}`,{headers:h});
+      if(res.ok) {
+        const d=await res.json();
+        healthData[ep.key]=d.data||[];
+      } else {
+        healthData[ep.key]=[];
+      }
+    } catch(e) {
+      healthData[ep.key]=[];
+    }
+  }
+
+  // Merge official sleep scores into sessions
+  const sleepScoreMap={};
+  (healthData.dailySleep||[]).forEach(d=>{sleepScoreMap[d.day]=d.score;});
+  healthData.sleep=(healthData.sleep||[]).map(s=>({...s, score: sleepScoreMap[s.day]??s.score??null}));
+
+  // Build daily resting HR from heart rate data (avg of lowest 10% per day — proxy for resting HR)
+  const hrByDay={};
+  (healthData.heartrate||[]).forEach(r=>{
+    const day=r.timestamp?.split('T')[0]; if(!day) return;
+    if(!hrByDay[day]) hrByDay[day]=[];
+    hrByDay[day].push(r.bpm);
+  });
+  healthData.dailyRestingHR=Object.entries(hrByDay).map(([day,vals])=>{
+    vals.sort((a,b)=>a-b);
+    const low=vals.slice(0,Math.max(1,Math.floor(vals.length*0.1)));
+    return {day, bpm:Math.round(low.reduce((a,b)=>a+b,0)/low.length)};
+  }).sort((a,b)=>a.day.localeCompare(b.day));
+
+  setLoadStatus('Ready', 100);
+}
+
+async function refreshAll() {
+  document.getElementById('loading-overlay').style.display='flex';
+  document.getElementById('load-bar').style.width='0%';
+  try {
+    await loadAllData();
+    Object.values(charts).forEach(c=>c.destroy()); charts={};
+    renderDashboard(); renderChatSidebar();
+  } catch(e) { alert('Refresh failed: '+e.message); }
+  document.getElementById('loading-overlay').style.display='none';
 }
 
 function logout() {
@@ -353,8 +483,38 @@ function logout() {
   document.getElementById('oura-token').value='';
   document.getElementById('connect-btn').disabled=false;
   document.getElementById('connect-btn').textContent='Begin';
-  // reset chat
-  document.getElementById('messages').innerHTML=`<div class="empty-chat" id="empty-chat"><div class="empty-chat-wordmark">aha</div><h3>Ask me anything</h3><p>Your data is ready. Ask about sleep, recovery, HRV — or anything on your mind.</p><div class="sug-grid"><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🌙</span>How was my sleep this week?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">💚</span>What does my HRV trend mean?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">📈</span>Which nights did I sleep best?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🎯</span>Top tip to improve my recovery?</button></div></div>`;
+  resetChatUI();
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
+function scoreColor(s){return s>=85?'var(--sage)':s>=70?'var(--birch)':'var(--ember)';}
+function trendArrow(curr,prev) {
+  if(!curr||!prev) return '';
+  const d=curr-prev;
+  if(Math.abs(d)<1.5) return '<span class="kpi-trend trend-flat">→</span>';
+  return d>0?`<span class="kpi-trend trend-up">↑ +${Math.round(d)}</span>`:`<span class="kpi-trend trend-down">↓ ${Math.round(d)}</span>`;
+}
+function getCutoff(days) { const d=new Date(); d.setDate(d.getDate()-days); return d; }
+function filterByDays(arr, days, keyFn=(x=>x.day)) {
+  const c=getCutoff(days);
+  return arr.filter(x=>new Date(keyFn(x))>=c).sort((a,b)=>keyFn(a).localeCompare(keyFn(b)));
+}
+function chartLabel(day) { return new Date(day).toLocaleDateString('en',{month:'short',day:'numeric'}); }
+
+const CHART_DEFAULTS = {
+  grid:'rgba(44,42,38,0.05)', tick:'#a09990',
+  tooltip:{backgroundColor:'rgba(255,255,255,0.96)',titleColor:'#2c2a26',bodyColor:'#6b6760',borderColor:'#e2ddd4',borderWidth:1}
+};
+
+function initGreeting() {
+  const h=new Date().getHours();
+  document.getElementById('dash-greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const d=new Date(), prev=new Date(d); prev.setDate(d.getDate()-6);
+  document.getElementById('summary-week').textContent=`${prev.toLocaleDateString('en',{month:'short',day:'numeric'})} – ${d.toLocaleDateString('en',{month:'short',day:'numeric'})}`;
 }
 
 function switchView(name,btn) {
@@ -363,67 +523,233 @@ function switchView(name,btn) {
   document.getElementById('view-'+name).classList.add('active'); btn.classList.add('active');
 }
 
-function getRecent(daysBack) {
-  const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-daysBack);
-  return {
-    sleep:(healthData.sleep||[]).filter(s=>s.type==='long_sleep'&&new Date(s.day)>=cutoff).sort((a,b)=>new Date(b.day)-new Date(a.day)),
-    readiness:(healthData.readiness||[]).filter(r=>new Date(r.day)>=cutoff).sort((a,b)=>new Date(b.day)-new Date(a.day))
-  };
-}
-function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
-function scoreColor(s){return s>=85?'var(--sage)':s>=70?'var(--birch)':'var(--ember)';}
-function trendArrow(curr,prev) {
-  if(!curr||!prev) return '';
-  const d=curr-prev;
-  if(Math.abs(d)<2) return '<span class="kpi-trend trend-flat">→</span>';
-  return d>0?`<span class="kpi-trend trend-up">↑ +${Math.round(d)}</span>`:`<span class="kpi-trend trend-down">↓ ${Math.round(d)}</span>`;
+function setDashRange(d,btn) {
+  dashDays=d;
+  document.querySelectorAll('.dash-range-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  Object.values(charts).forEach(c=>c.destroy()); charts={};
+  renderDashboard();
 }
 
+// ═══════════════════════════════════════
+// DASHBOARD RENDERING
+// ═══════════════════════════════════════
 function renderDashboard() {
-  const {sleep:s7,readiness:r7}=getRecent(7);
-  const {sleep:s14,readiness:r14}=getRecent(14);
-  const ls=s7[0], lr=r7[0];
-  const as7=avg(s7.map(s=>s.score).filter(Boolean));
-  const as14p=avg(s14.slice(s7.length).map(s=>s.score).filter(Boolean));
-  const ar7=avg(r7.map(r=>r.score).filter(Boolean));
-  const ar14p=avg(r14.slice(r7.length).map(r=>r.score).filter(Boolean));
-  const sh=ls?(ls.total_sleep_duration/3600).toFixed(1):'—';
-  const dp=ls&&ls.total_sleep_duration?Math.round(ls.deep_sleep_duration/ls.total_sleep_duration*100):null;
-
-  document.getElementById('kpi-row').innerHTML=`
-    <div class="kpi-card">${trendArrow(as7,as14p)}<div class="kpi-accent-bar" style="background:var(--fjord)"></div><div class="kpi-label">Avg Sleep Score</div><div class="kpi-value" style="color:${scoreColor(as7)}">${as7?Math.round(as7):'—'}</div><div class="kpi-sub">7-day avg · ${s7.length} nights</div></div>
-    <div class="kpi-card">${trendArrow(ar7,ar14p)}<div class="kpi-accent-bar" style="background:var(--sage)"></div><div class="kpi-label">Avg Readiness</div><div class="kpi-value" style="color:${scoreColor(ar7)}">${ar7?Math.round(ar7):'—'}</div><div class="kpi-sub">7-day avg · ${r7.length} days</div></div>
-    <div class="kpi-card"><div class="kpi-accent-bar" style="background:var(--aurora)"></div><div class="kpi-label">Last Night</div><div class="kpi-value" style="color:${scoreColor(ls?.score||0)}">${ls?.score??'—'}</div><div class="kpi-sub">${sh}h · ${dp!=null?`${dp}% deep`:'—'}</div></div>
-    <div class="kpi-card"><div class="kpi-accent-bar" style="background:var(--birch)"></div><div class="kpi-label">Today's Readiness</div><div class="kpi-value" style="color:${scoreColor(lr?.score||0)}">${lr?.score??'—'}</div><div class="kpi-sub">${lr?.day??'No data'}</div></div>`;
-
-  renderCharts([...s14].reverse(),[...r14].reverse());
-  document.getElementById('charts-row').style.display='grid';
-  document.getElementById('summary-card').style.display='block';
-  document.getElementById('recs-section').style.display='block';
-  generateWeeklySummary(); generateRecommendations();
+  renderSleepSection();
+  renderReadinessSection();
+  renderHRSection();
+  renderActivitySection();
+  renderTempSection();
+  renderSpO2Section();
+  generateWeeklySummary();
+  generateRecommendations();
 }
 
-function renderCharts(sleep14,ready14) {
-  const labels=sleep14.map(s=>{const d=new Date(s.day);return d.toLocaleDateString('en',{month:'short',day:'numeric'});});
-  const grid='rgba(44,42,38,0.05)', tick='#a09990';
-  const rm={}; ready14.forEach(r=>{rm[r.day]=r;});
-  if(charts.sleep) charts.sleep.destroy();
-  charts.sleep=new Chart(document.getElementById('chart-sleep'),{type:'bar',data:{labels,datasets:[{data:sleep14.map(s=>s.score),backgroundColor:sleep14.map(s=>s.score>=85?'rgba(107,143,113,0.55)':s.score>=70?'rgba(196,168,130,0.55)':'rgba(194,123,90,0.55)'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` Score: ${ctx.raw}`},backgroundColor:'rgba(255,255,255,0.95)',titleColor:'#2c2a26',bodyColor:'#6b6760',borderColor:'#e2ddd4',borderWidth:1}},scales:{x:{grid:{color:grid},ticks:{color:tick,font:{size:10}}},y:{grid:{color:grid},ticks:{color:tick,font:{size:10}},min:40,max:100}}}});
+function mkKPI(accentColor, label, value, sub, trend='') {
+  return `<div class="kpi-card">${trend}<div class="kpi-accent-bar" style="background:${accentColor}"></div><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div><div class="kpi-sub">${sub}</div></div>`;
+}
+
+/* ── SLEEP ── */
+function renderSleepSection() {
+  const daily=filterByDays(healthData.dailySleep||[], dashDays);
+  const sessions=filterByDays((healthData.sleep||[]).filter(s=>s.type==='long_sleep'), dashDays);
+  const prev=filterByDays(healthData.dailySleep||[], dashDays*2).slice(0,-daily.length);
+
+  const avgScore=avg(daily.map(d=>d.score).filter(Boolean));
+  const prevScore=avg(prev.map(d=>d.score).filter(Boolean));
+  const latestScore=daily[daily.length-1]?.score;
+  const avgHours=avg(sessions.map(s=>s.total_sleep_duration/3600).filter(Boolean));
+  const avgDeep=avg(sessions.filter(s=>s.total_sleep_duration).map(s=>s.deep_sleep_duration/s.total_sleep_duration*100));
+  const avgREM=avg(sessions.filter(s=>s.total_sleep_duration).map(s=>s.rem_sleep_duration/s.total_sleep_duration*100));
+  const avgEff=avg(sessions.map(s=>s.sleep_efficiency).filter(Boolean));
+
+  document.getElementById('sleep-kpis').innerHTML=
+    mkKPI('var(--fjord)','Avg Sleep Score',avgScore?`<span style="color:${scoreColor(avgScore)}">${Math.round(avgScore)}</span>`:'—',`${dashDays}d avg · ${daily.length} nights`,trendArrow(avgScore,prevScore))+
+    mkKPI('var(--fjord)','Last Night',latestScore?`<span style="color:${scoreColor(latestScore)}">${latestScore}</span>`:'—',daily[daily.length-1]?.day||'')+
+    mkKPI('var(--aurora)','Avg Duration',avgHours?`${avgHours.toFixed(1)}h`:'—','hours of sleep')+
+    mkKPI('var(--sage)','Deep Sleep',avgDeep?`${Math.round(avgDeep)}%`:'—','of total sleep')+
+    mkKPI('var(--birch)','REM Sleep',avgREM?`${Math.round(avgREM)}%`:'—','of total sleep');
+
+  // Sleep score chart
+  document.getElementById('sleep-chart-sub').textContent=`${dashDays} days`;
+  if(charts.sleepScore) charts.sleepScore.destroy();
+  charts.sleepScore=new Chart(document.getElementById('chart-sleep-score'),{
+    type:'bar',
+    data:{labels:daily.map(d=>chartLabel(d.day)),datasets:[{data:daily.map(d=>d.score),backgroundColor:daily.map(d=>d.score>=85?'rgba(107,143,113,0.6)':d.score>=70?'rgba(196,168,130,0.6)':'rgba(194,123,90,0.6)'),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` Score: ${c.raw}`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}},min:40,max:100}}}
+  });
+
+  // Sleep stages doughnut
+  if(charts.sleepStages) charts.sleepStages.destroy();
+  const stageData=[Math.round(avgDeep)||0, Math.round(avgREM)||0, Math.round(100-avgDeep-avgREM)||0];
+  charts.sleepStages=new Chart(document.getElementById('chart-sleep-stages'),{
+    type:'doughnut',
+    data:{labels:['Deep','REM','Light/Awake'],datasets:[{data:stageData,backgroundColor:['rgba(74,124,142,0.75)','rgba(155,127,182,0.75)','rgba(196,168,130,0.5)'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{color:CHART_DEFAULTS.tick,font:{size:10},padding:12,boxWidth:10}},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.label}: ${c.raw}%`}}}}
+  });
+
+  document.getElementById('sleep-charts').style.display='grid';
+}
+
+/* ── READINESS & HRV ── */
+function renderReadinessSection() {
+  const r=filterByDays(healthData.readiness||[], dashDays);
+  const prev=filterByDays(healthData.readiness||[], dashDays*2).slice(0,-r.length);
+  const avgScore=avg(r.map(x=>x.score).filter(Boolean));
+  const prevScore=avg(prev.map(x=>x.score).filter(Boolean));
+  const latest=r[r.length-1];
+  const avgHRV=avg(r.map(x=>x.contributors?.hrv_balance).filter(Boolean));
+  const avgRHR=avg(r.map(x=>x.contributors?.resting_heart_rate).filter(Boolean));
+
+  document.getElementById('readiness-kpis').innerHTML=
+    mkKPI('var(--sage)','Avg Readiness',avgScore?`<span style="color:${scoreColor(avgScore)}">${Math.round(avgScore)}</span>`:'—',`${dashDays}d avg`,trendArrow(avgScore,prevScore))+
+    mkKPI('var(--sage)','Today',latest?.score?`<span style="color:${scoreColor(latest.score)}">${latest.score}</span>`:'—',latest?.day||'')+
+    mkKPI('var(--fjord)','HRV Balance',avgHRV?Math.round(avgHRV):'—','avg score')+
+    mkKPI('var(--ember)','Resting HR',avgRHR?`${Math.round(avgRHR)} bpm`:'—','avg contributor');
+
+  document.getElementById('readiness-chart-sub').textContent=`${dashDays} days`;
+  if(charts.readiness) charts.readiness.destroy();
+  charts.readiness=new Chart(document.getElementById('chart-readiness'),{
+    type:'line',
+    data:{labels:r.map(x=>chartLabel(x.day)),datasets:[{data:r.map(x=>x.score),borderColor:'rgba(107,143,113,0.85)',backgroundColor:'rgba(107,143,113,0.08)',tension:0.4,fill:true,pointRadius:2,pointBackgroundColor:'rgba(107,143,113,1)',pointBorderColor:'white',pointBorderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}},min:40,max:100}}}
+  });
+
   if(charts.hrv) charts.hrv.destroy();
-  charts.hrv=new Chart(document.getElementById('chart-hrv'),{type:'line',data:{labels,datasets:[{label:'Readiness',data:sleep14.map(s=>rm[s.day]?.score||null),borderColor:'rgba(107,143,113,0.8)',backgroundColor:'rgba(107,143,113,0.07)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'rgba(107,143,113,1)',pointBorderColor:'white',pointBorderWidth:1.5},{label:'HRV Balance',data:sleep14.map(s=>rm[s.day]?.contributors?.hrv_balance||null),borderColor:'rgba(74,124,142,0.7)',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'rgba(74,124,142,1)',pointBorderColor:'white',pointBorderWidth:1.5,borderDash:[4,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tick,font:{size:10},boxWidth:10,padding:12}},tooltip:{backgroundColor:'rgba(255,255,255,0.95)',titleColor:'#2c2a26',bodyColor:'#6b6760',borderColor:'#e2ddd4',borderWidth:1}},scales:{x:{grid:{color:grid},ticks:{color:tick,font:{size:10}}},y:{grid:{color:grid},ticks:{color:tick,font:{size:10}},min:40,max:100}}}});
+  charts.hrv=new Chart(document.getElementById('chart-hrv'),{
+    type:'line',
+    data:{labels:r.map(x=>chartLabel(x.day)),datasets:[{data:r.map(x=>x.contributors?.hrv_balance||null),borderColor:'rgba(74,124,142,0.8)',backgroundColor:'rgba(74,124,142,0.06)',tension:0.4,fill:true,pointRadius:2,pointBackgroundColor:'rgba(74,124,142,1)',pointBorderColor:'white',pointBorderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}}}}}
+  });
+
+  document.getElementById('readiness-charts').style.display='grid';
 }
 
-async function callClaude(system,user,maxTokens=600) {
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,system,messages:[{role:'user',content:user}]})});
+/* ── HEART RATE ── */
+function renderHRSection() {
+  const rhr=filterByDays(healthData.dailyRestingHR||[], dashDays, x=>x.day);
+  const avgRHR=avg(rhr.map(x=>x.bpm).filter(Boolean));
+  const minRHR=rhr.length?Math.min(...rhr.map(x=>x.bpm).filter(Boolean)):null;
+  const maxRHR=rhr.length?Math.max(...rhr.map(x=>x.bpm).filter(Boolean)):null;
+
+  document.getElementById('hr-kpis').innerHTML=
+    mkKPI('var(--ember)','Avg Resting HR',avgRHR?`${Math.round(avgRHR)} bpm`:'—',`${dashDays}d avg`)+
+    mkKPI('var(--sage)','Lowest',minRHR?`${minRHR} bpm`:'—','best recovery')+
+    mkKPI('var(--birch)','Highest',maxRHR?`${maxRHR} bpm`:'—','peak resting');
+
+  if(charts.rhr) charts.rhr.destroy();
+  charts.rhr=new Chart(document.getElementById('chart-rhr'),{
+    type:'line',
+    data:{labels:rhr.map(x=>chartLabel(x.day)),datasets:[{data:rhr.map(x=>x.bpm),borderColor:'rgba(194,123,90,0.8)',backgroundColor:'rgba(194,123,90,0.07)',tension:0.4,fill:true,pointRadius:2,pointBackgroundColor:'rgba(194,123,90,1)',pointBorderColor:'white',pointBorderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw} bpm`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}}}}}
+  });
+
+  document.getElementById('hr-charts').style.display='grid';
+}
+
+/* ── ACTIVITY ── */
+function renderActivitySection() {
+  const a=filterByDays(healthData.activity||[], dashDays);
+  const avgScore=avg(a.map(x=>x.score).filter(Boolean));
+  const avgSteps=avg(a.map(x=>x.steps).filter(Boolean));
+  const avgCal=avg(a.map(x=>x.total_calories).filter(Boolean));
+  const avgActive=avg(a.map(x=>x.high_activity_time).filter(Boolean));
+
+  document.getElementById('activity-kpis').innerHTML=
+    mkKPI('var(--sage)','Avg Activity Score',avgScore?`<span style="color:${scoreColor(avgScore)}">${Math.round(avgScore)}</span>`:'—',`${dashDays}d avg`)+
+    mkKPI('var(--fjord)','Avg Daily Steps',avgSteps?Math.round(avgSteps).toLocaleString():'—','steps per day')+
+    mkKPI('var(--birch)','Avg Calories',avgCal?Math.round(avgCal).toLocaleString():'—','total kcal/day')+
+    mkKPI('var(--aurora)','Active Time',avgActive?`${Math.round(avgActive/60)} min`:'—','high activity/day');
+
+  if(charts.steps) charts.steps.destroy();
+  charts.steps=new Chart(document.getElementById('chart-steps'),{
+    type:'bar',
+    data:{labels:a.map(x=>chartLabel(x.day)),datasets:[{data:a.map(x=>x.steps||0),backgroundColor:'rgba(107,143,113,0.5)',borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw?.toLocaleString()} steps`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}}}}}
+  });
+
+  if(charts.actScore) charts.actScore.destroy();
+  charts.actScore=new Chart(document.getElementById('chart-activity'),{
+    type:'line',
+    data:{labels:a.map(x=>chartLabel(x.day)),datasets:[{data:a.map(x=>x.score),borderColor:'rgba(155,127,182,0.8)',backgroundColor:'rgba(155,127,182,0.07)',tension:0.4,fill:true,pointRadius:2,pointBackgroundColor:'rgba(155,127,182,1)',pointBorderColor:'white',pointBorderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}},min:0,max:100}}}
+  });
+
+  document.getElementById('activity-charts').style.display='grid';
+}
+
+/* ── TEMPERATURE ── */
+function renderTempSection() {
+  const r=filterByDays(healthData.readiness||[], dashDays);
+  const temps=r.map(x=>({day:x.day, dev:x.contributors?.body_temperature})).filter(x=>x.dev!=null);
+  const avgDev=avg(temps.map(x=>x.dev));
+  const minDev=temps.length?Math.min(...temps.map(x=>x.dev)):null;
+  const maxDev=temps.length?Math.max(...temps.map(x=>x.dev)):null;
+
+  document.getElementById('temp-kpis').innerHTML=
+    mkKPI('var(--aurora)','Avg Deviation',avgDev?`${avgDev.toFixed(2)}°C`:'—','from your baseline')+
+    mkKPI('var(--sage)','Lowest',minDev!=null?`${minDev.toFixed(2)}°C`:'—','coolest night')+
+    mkKPI('var(--ember)','Highest',maxDev!=null?`${maxDev.toFixed(2)}°C`:'—','warmest night');
+
+  if(charts.temp) charts.temp.destroy();
+  const tempColors=temps.map(x=>x.dev>0.5?'rgba(194,123,90,0.7)':x.dev<-0.5?'rgba(74,124,142,0.7)':'rgba(107,143,113,0.6)');
+  charts.temp=new Chart(document.getElementById('chart-temp'),{
+    type:'bar',
+    data:{labels:temps.map(x=>chartLabel(x.day)),datasets:[{data:temps.map(x=>x.dev),backgroundColor:tempColors,borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw?.toFixed(2)}°C`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}},suggestedMin:-1.5,suggestedMax:1.5}}}
+  });
+}
+
+/* ── SPO2 ── */
+function renderSpO2Section() {
+  const spo2=filterByDays(healthData.spo2||[], dashDays);
+  if(!spo2.length) {
+    document.getElementById('spo2-kpis').innerHTML='<div style="color:var(--muted);font-size:0.8rem;padding:8px">SpO₂ data not available — requires Oura Gen 3.</div>';
+    return;
+  }
+  const avgSpo2=avg(spo2.map(x=>x.spo2_percentage?.average).filter(Boolean));
+  const minSpo2=spo2.length?Math.min(...spo2.map(x=>x.spo2_percentage?.average).filter(Boolean)):null;
+  const latest=spo2[spo2.length-1]?.spo2_percentage?.average;
+
+  document.getElementById('spo2-kpis').innerHTML=
+    mkKPI('var(--fjord)','Avg SpO₂',avgSpo2?`${avgSpo2.toFixed(1)}%`:'—',`${dashDays}d avg`)+
+    mkKPI('var(--sage)','Latest',latest?`${latest.toFixed(1)}%`:'—',spo2[spo2.length-1]?.day||'')+
+    mkKPI('var(--ember)','Lowest',minSpo2?`${minSpo2.toFixed(1)}%`:'—','watch if <95%');
+}
+
+// ═══════════════════════════════════════
+// AI GENERATION
+// ═══════════════════════════════════════
+async function callClaude(system, user, maxTokens=600) {
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,system,messages:[{role:'user',content:user}]})
+  });
   if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error');}
   return (await res.json()).content[0].text;
 }
 
+function buildWeeklySnapshot() {
+  const s7=filterByDays(healthData.dailySleep||[],7);
+  const r7=filterByDays(healthData.readiness||[],7);
+  const a7=filterByDays(healthData.activity||[],7);
+  const sleep7=filterByDays((healthData.sleep||[]).filter(x=>x.type==='long_sleep'),7);
+  return {
+    sleep: s7.map(x=>({date:x.day,score:x.score})),
+    sleep_detail: sleep7.map(s=>({date:s.day,hours:+(s.total_sleep_duration/3600).toFixed(1),deep_pct:s.total_sleep_duration?Math.round(s.deep_sleep_duration/s.total_sleep_duration*100):null,rem_pct:s.total_sleep_duration?Math.round(s.rem_sleep_duration/s.total_sleep_duration*100):null,efficiency:s.sleep_efficiency})),
+    readiness: r7.map(x=>({date:x.day,score:x.score,hrv_balance:x.contributors?.hrv_balance,resting_hr:x.contributors?.resting_heart_rate,body_temp:x.contributors?.body_temperature})),
+    activity: a7.map(x=>({date:x.day,score:x.score,steps:x.steps})),
+  };
+}
+
 async function generateWeeklySummary() {
-  const {sleep,readiness}=getRecent(7);
-  const d={sleep:sleep.map(s=>({date:s.day,score:s.score,hours:+(s.total_sleep_duration/3600).toFixed(1),deep_pct:s.total_sleep_duration?Math.round(s.deep_sleep_duration/s.total_sleep_duration*100):null,rem_pct:s.total_sleep_duration?Math.round(s.rem_sleep_duration/s.total_sleep_duration*100):null})),readiness:readiness.map(r=>({date:r.day,score:r.score,hrv_balance:r.contributors?.hrv_balance,resting_hr:r.contributors?.resting_heart_rate}))};
+  document.getElementById('summary-body').innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.85rem"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>&nbsp;Composing your summary…</div>';
   try {
-    const reply=await callClaude('You are a calm, thoughtful health companion. Write a warm weekly summary in 2-3 sentences. Be specific with numbers. Use **bold** for key numbers. Tone: measured, honest, encouraging — like a trusted Nordic doctor.',`Weekly Oura data: ${JSON.stringify(d)}`,350);
+    const reply=await callClaude(
+      'You are a calm, thoughtful health companion. Write a warm, insightful weekly summary in 3-4 sentences covering sleep, readiness, HRV, and activity. Be specific with numbers. Use **bold** for key numbers. Tone: measured, honest, Nordic calm.',
+      `Weekly health data: ${JSON.stringify(buildWeeklySnapshot())}`, 400
+    );
     document.getElementById('summary-body').innerHTML='<p>'+reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</p>';
   } catch(e) {
     document.getElementById('summary-body').innerHTML=`<p style="color:var(--muted)">Summary unavailable: ${e.message}</p>`;
@@ -431,34 +757,90 @@ async function generateWeeklySummary() {
 }
 
 async function generateRecommendations() {
-  const {sleep,readiness}=getRecent(7);
-  const d={avg_sleep_score:Math.round(avg(sleep.map(s=>s.score).filter(Boolean))),avg_readiness:Math.round(avg(readiness.map(r=>r.score).filter(Boolean))),avg_deep_pct:Math.round(avg(sleep.filter(s=>s.total_sleep_duration).map(s=>Math.round(s.deep_sleep_duration/s.total_sleep_duration*100)))),avg_rem_pct:Math.round(avg(sleep.filter(s=>s.total_sleep_duration).map(s=>Math.round(s.rem_sleep_duration/s.total_sleep_duration*100)))),avg_hrv:Math.round(avg(readiness.map(r=>r.contributors?.hrv_balance).filter(Boolean)))};
+  const snap=buildWeeklySnapshot();
+  const summary={
+    avg_sleep: Math.round(avg(snap.sleep.map(x=>x.score).filter(Boolean))),
+    avg_readiness: Math.round(avg(snap.readiness.map(x=>x.score).filter(Boolean))),
+    avg_hrv: Math.round(avg(snap.readiness.map(x=>x.hrv_balance).filter(Boolean))),
+    avg_rhr: Math.round(avg(snap.readiness.map(x=>x.resting_hr).filter(Boolean))),
+    avg_steps: Math.round(avg(snap.activity.map(x=>x.steps).filter(Boolean))),
+    avg_deep_pct: Math.round(avg(snap.sleep_detail.map(x=>x.deep_pct).filter(Boolean))),
+    avg_rem_pct: Math.round(avg(snap.sleep_detail.map(x=>x.rem_pct).filter(Boolean))),
+    avg_temp_dev: +(avg(snap.readiness.map(x=>x.body_temp).filter(Boolean))).toFixed(2),
+  };
   try {
-    const reply=await callClaude('You are a health coach. Respond ONLY with a valid JSON array — no markdown, no code fences, no explanation. Format: [{"icon":"emoji","title":"short title","body":"1-2 sentences specific actionable advice","priority":"high|medium|low"}]',`Generate 3 personalised recommendations: ${JSON.stringify(d)}`,500);
+    const reply=await callClaude(
+      'You are a health coach. Respond ONLY with a valid JSON array — no markdown, no code fences. Format: [{"icon":"emoji","title":"short title","body":"1-2 sentences specific actionable advice","priority":"high|medium|low"}]',
+      `Generate 3 personalised recommendations: ${JSON.stringify(summary)}`, 500
+    );
     const recs=JSON.parse(reply.replace(/```json|```/g,'').trim());
     document.getElementById('recs-grid').innerHTML=recs.map(r=>`<div class="rec-card"><span class="rec-icon">${r.icon}</span><div class="rec-title">${r.title}</div><div class="rec-body">${r.body}</div><span class="rec-tag ${r.priority==='high'?'tag-high':r.priority==='medium'?'tag-medium':'tag-low'}">${r.priority}</span></div>`).join('');
   } catch(e) {
-    document.getElementById('recs-grid').innerHTML=`<div style="color:var(--muted);font-size:0.8rem;padding:12px">Recommendations unavailable.</div>`;
+    document.getElementById('recs-grid').innerHTML=`<div style="color:var(--muted);font-size:0.8rem;padding:12px">Recommendations unavailable: ${e.message}</div>`;
   }
 }
 
+// ═══════════════════════════════════════
+// CHAT SIDEBAR
+// ═══════════════════════════════════════
 function renderChatSidebar() {
-  const {sleep,readiness}=getRecent(7);
-  const ls=sleep[0], lr=readiness[0];
-  const as=avg(sleep.map(s=>s.score).filter(Boolean)), ar=avg(readiness.map(r=>r.score).filter(Boolean));
-  document.getElementById('chat-sidebar').innerHTML=`<div class="sidebar-section"><div class="sidebar-sec-label">Latest</div><div class="mini-stat"><span class="mini-stat-name">Sleep</span><span class="mini-stat-val" style="color:${scoreColor(ls?.score||0)}">${ls?.score??'—'}</span></div><div class="mini-stat"><span class="mini-stat-name">Readiness</span><span class="mini-stat-val" style="color:${scoreColor(lr?.score||0)}">${lr?.score??'—'}</span></div></div><div class="sidebar-section"><div class="sidebar-sec-label">7-Day Avg</div><div class="mini-stat"><span class="mini-stat-name">Sleep</span><span class="mini-stat-val">${as?Math.round(as):'—'}</span></div><div class="mini-stat"><span class="mini-stat-name">Readiness</span><span class="mini-stat-val">${ar?Math.round(ar):'—'}</span></div></div><div class="sidebar-section"><div class="sidebar-sec-label">Quick Ask</div><div class="chip-cloud"><button class="chip" onclick="sendSug('What was my best night this week?')">Best night</button><button class="chip" onclick="sendSug('Explain my HRV balance score')">HRV</button><button class="chip" onclick="sendSug('How is my deep sleep vs optimal?')">Deep sleep</button><button class="chip" onclick="sendSug('One tip for better sleep tonight')">Tonight</button><button class="chip" onclick="sendSug('Am I overtraining or under-recovering?')">Recovery</button><button class="chip" onclick="sendSug('What time should I go to bed?')">Bedtime</button></div></div>`;
+  const latest=filterByDays(healthData.dailySleep||[],1)[0];
+  const latestR=filterByDays(healthData.readiness||[],1)[0];
+  const latestA=filterByDays(healthData.activity||[],1)[0];
+  const avgS7=avg(filterByDays(healthData.dailySleep||[],7).map(x=>x.score).filter(Boolean));
+  const avgR7=avg(filterByDays(healthData.readiness||[],7).map(x=>x.score).filter(Boolean));
+  const avgHRV7=avg(filterByDays(healthData.readiness||[],7).map(x=>x.contributors?.hrv_balance).filter(Boolean));
+
+  document.getElementById('chat-sidebar').innerHTML=`
+    <div class="sidebar-section">
+      <div class="sidebar-sec-label">Today</div>
+      <div class="mini-stat"><span class="mini-stat-name">Sleep</span><span class="mini-stat-val" style="color:${scoreColor(latest?.score||0)}">${latest?.score??'—'}</span></div>
+      <div class="mini-stat"><span class="mini-stat-name">Readiness</span><span class="mini-stat-val" style="color:${scoreColor(latestR?.score||0)}">${latestR?.score??'—'}</span></div>
+      <div class="mini-stat"><span class="mini-stat-name">Steps</span><span class="mini-stat-val">${latestA?.steps?latestA.steps.toLocaleString():'—'}</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-sec-label">7-Day Avg</div>
+      <div class="mini-stat"><span class="mini-stat-name">Sleep</span><span class="mini-stat-val">${avgS7?Math.round(avgS7):'—'}</span></div>
+      <div class="mini-stat"><span class="mini-stat-name">Readiness</span><span class="mini-stat-val">${avgR7?Math.round(avgR7):'—'}</span></div>
+      <div class="mini-stat"><span class="mini-stat-name">HRV Bal.</span><span class="mini-stat-val">${avgHRV7?Math.round(avgHRV7):'—'}</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-sec-label">Quick Ask</div>
+      <div class="chip-cloud">
+        <button class="chip" onclick="sendSug('What was my best night of sleep this month?')">Best night</button>
+        <button class="chip" onclick="sendSug('Explain my HRV trend over the last 30 days')">HRV trend</button>
+        <button class="chip" onclick="sendSug('How is my deep sleep compared to optimal?')">Deep sleep</button>
+        <button class="chip" onclick="sendSug('Are there any concerning temperature patterns?')">Temperature</button>
+        <button class="chip" onclick="sendSug('How does my activity affect my sleep scores?')">Activity & sleep</button>
+        <button class="chip" onclick="sendSug('What time should I go to bed tonight?')">Bedtime</button>
+        <button class="chip" onclick="sendSug('Am I overtraining or under-recovering?')">Recovery</button>
+        <button class="chip" onclick="sendSug('Give me a full health summary for this month')">Monthly summary</button>
+      </div>
+    </div>`;
 }
 
-function setRange(d,btn){days=d;document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+// ═══════════════════════════════════════
+// CHAT
+// ═══════════════════════════════════════
+function setChatRange(d,btn){chatDays=d;document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';}
 function sendSug(text){document.getElementById('chat-input').value=text;sendMessage();}
 
-function buildSystemPrompt() {
-  const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-days);
-  const sleep=(healthData.sleep||[]).filter(s=>s.type==='long_sleep'&&new Date(s.day)>=cutoff).sort((a,b)=>new Date(a.day)-new Date(b.day)).map(s=>({date:s.day,score:s.score,total_hours:+(s.total_sleep_duration/3600).toFixed(1),deep_pct:s.total_sleep_duration?Math.round(s.deep_sleep_duration/s.total_sleep_duration*100):null,rem_pct:s.total_sleep_duration?Math.round(s.rem_sleep_duration/s.total_sleep_duration*100):null,efficiency:s.sleep_efficiency,latency_min:s.onset_latency?Math.round(s.onset_latency/60):null}));
-  const readiness=(healthData.readiness||[]).filter(r=>new Date(r.day)>=cutoff).sort((a,b)=>new Date(a.day)-new Date(b.day)).map(r=>({date:r.day,score:r.score,hrv_balance:r.contributors?.hrv_balance,resting_hr:r.contributors?.resting_heart_rate,body_temp:r.contributors?.body_temperature}));
-  return `You are aha — a calm, warm personal health companion with deep expertise in sleep science, HRV, and recovery. You have the user's Oura Ring data for the last ${days} days.\n\nSleep (${sleep.length} nights): ${JSON.stringify(sleep)}\nReadiness (${readiness.length} days): ${JSON.stringify(readiness)}\n\nTone: measured, warm, Nordic calm — like a trusted doctor who is also a friend. Be specific with dates and numbers. 2-4 paragraphs max. Scores: 85+ Optimal, 70-84 Good, <70 Needs attention. Use **bold** for key numbers.`;
+function buildChatContext() {
+  const sleep=filterByDays((healthData.sleep||[]).filter(s=>s.type==='long_sleep'),chatDays).map(s=>({date:s.day,score:s.score,hours:+(s.total_sleep_duration/3600).toFixed(1),deep_pct:s.total_sleep_duration?Math.round(s.deep_sleep_duration/s.total_sleep_duration*100):null,rem_pct:s.total_sleep_duration?Math.round(s.rem_sleep_duration/s.total_sleep_duration*100):null,efficiency:s.sleep_efficiency,latency_min:s.onset_latency?Math.round(s.onset_latency/60):null}));
+  const readiness=filterByDays(healthData.readiness||[],chatDays).map(r=>({date:r.day,score:r.score,hrv_balance:r.contributors?.hrv_balance,resting_hr:r.contributors?.resting_heart_rate,body_temp:r.contributors?.body_temperature,recovery_index:r.contributors?.recovery_index}));
+  const activity=filterByDays(healthData.activity||[],chatDays).map(a=>({date:a.day,score:a.score,steps:a.steps,calories:a.total_calories,active_min:a.high_activity_time?Math.round(a.high_activity_time/60):null}));
+  const spo2=filterByDays(healthData.spo2||[],chatDays).map(x=>({date:x.day,avg_pct:x.spo2_percentage?.average}));
+
+  return `You are aha — a calm, warm personal health companion with deep expertise in sleep science, HRV, recovery, and biometric health data. You have the user's full Oura Ring data for the last ${chatDays} days.
+
+Sleep sessions (${sleep.length} nights): ${JSON.stringify(sleep)}
+Readiness (${readiness.length} days): ${JSON.stringify(readiness)}
+Activity (${activity.length} days): ${JSON.stringify(activity)}
+SpO₂ (${spo2.length} days): ${JSON.stringify(spo2)}
+
+Tone: measured, warm, Nordic calm — like a trusted doctor who is also a friend. Be specific with dates and numbers from the actual data. 2-4 paragraphs max unless asked for more. Scores: 85+ Optimal, 70-84 Good, <70 Needs attention. Use **bold** for key numbers and insights.`;
 }
 
 async function sendMessage() {
@@ -475,7 +857,7 @@ async function sendMessage() {
   tel.innerHTML=`<div class="msg-av ai">aha</div><div class="thinking-bubble"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>&nbsp;Thinking…</div>`;
   el.appendChild(tel); el.scrollTop=el.scrollHeight;
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildSystemPrompt(),messages:chatHistory})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildChatContext(),messages:chatHistory})});
     if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error');}
     const reply=(await res.json()).content[0].text;
     document.getElementById(tid)?.remove();
@@ -493,6 +875,11 @@ function addMsg(role,text) {
   const fmt=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
   div.innerHTML=role==='ai'?`${av}<div class="msg-bubble">${fmt}</div>`:`${av}<div class="msg-bubble">${text}</div>`;
   el.appendChild(div); el.scrollTop=el.scrollHeight;
+}
+
+function resetChatUI() {
+  chatHistory=[];
+  document.getElementById('messages').innerHTML=`<div class="empty-chat" id="empty-chat"><div class="empty-chat-wordmark">aha</div><h3>Ask me anything</h3><p>90 days of your health data is loaded. Ask about sleep, HRV, temperature trends, activity — anything.</p><div class="sug-grid"><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🌙</span>How has my sleep been this month?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">💚</span>What does my HRV trend say?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🌡️</span>Any unusual temperature patterns?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">📈</span>What's my overall health trend?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🏃</span>How active have I been lately?</button><button class="sug-btn" onclick="sendSug(this.innerText)"><span class="sug-icon">🎯</span>What's my biggest area to improve?</button></div></div>`;
 }
 </script>
 </body>
