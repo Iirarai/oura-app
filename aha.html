@@ -1496,7 +1496,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="section-ask" id="ask-sleep"></div>
+                <div class="section-ask">
+                    <button class="ask-toggle" onclick="toggleAskPanel('sleep')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about Sleep
+                    </button>
+                    <div class="ask-panel" id="ask-panel-sleep">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('sleep','Why is my deep sleep low?')">Why is my deep sleep low?</button>
+                            <button class="ask-chip" onclick="askSectionChip('sleep','What affects sleep efficiency?')">What affects sleep efficiency?</button>
+                            <button class="ask-chip" onclick="askSectionChip('sleep','How can I improve my sleep score?')">How can I improve my sleep score?</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-sleep" placeholder="Ask anything about your sleep data…" onkeydown="if(event.key==='Enter')askSectionQuestion('sleep')">
+                            <button class="ask-send" onclick="askSectionQuestion('sleep')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-sleep"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- READINESS & HRV -->
@@ -1532,7 +1556,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="section-ask" id="ask-readiness"></div>
+                <div class="section-ask">
+                    <button class="ask-toggle" onclick="toggleAskPanel('readiness')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about Readiness & HRV
+                    </button>
+                    <div class="ask-panel" id="ask-panel-readiness">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('readiness','What is HRV balance?')">What is HRV balance?</button>
+                            <button class="ask-chip" onclick="askSectionChip('readiness','Why is my readiness dropping?')">Why is my readiness dropping?</button>
+                            <button class="ask-chip" onclick="askSectionChip('readiness','How does resting HR relate to recovery?')">How does resting HR relate to recovery?</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-readiness" placeholder="Ask anything about your readiness data…" onkeydown="if(event.key==='Enter')askSectionQuestion('readiness')">
+                            <button class="ask-send" onclick="askSectionQuestion('readiness')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-readiness"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- HEART RATE -->
@@ -1558,7 +1606,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="section-ask" id="ask-heartrate"></div>
+                <div class="section-ask">
+                    <button class="ask-toggle" onclick="toggleAskPanel('heartrate')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about Heart Rate
+                    </button>
+                    <div class="ask-panel" id="ask-panel-heartrate">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('heartrate','Is my resting HR normal?')">Is my resting HR normal?</button>
+                            <button class="ask-chip" onclick="askSectionChip('heartrate','What causes RHR to spike?')">What causes RHR to spike?</button>
+                            <button class="ask-chip" onclick="askSectionChip('heartrate','How can I lower my resting heart rate?')">How can I lower my resting heart rate?</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-heartrate" placeholder="Ask anything about your heart rate data…" onkeydown="if(event.key==='Enter')askSectionQuestion('heartrate')">
+                            <button class="ask-send" onclick="askSectionQuestion('heartrate')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-heartrate"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- ACTIVITY -->
@@ -1594,7 +1666,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="section-ask" id="ask-activity"></div>
+                <div class="section-ask">
+                    <button class="ask-toggle" onclick="toggleAskPanel('activity')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about Activity
+                    </button>
+                    <div class="ask-panel" id="ask-panel-activity">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('activity','Am I active enough?')">Am I active enough?</button>
+                            <button class="ask-chip" onclick="askSectionChip('activity','How do my steps compare to recommended?')">How do my steps compare to recommended?</button>
+                            <button class="ask-chip" onclick="askSectionChip('activity','Does activity affect my sleep?')">Does activity affect my sleep?</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-activity" placeholder="Ask anything about your activity data…" onkeydown="if(event.key==='Enter')askSectionQuestion('activity')">
+                            <button class="ask-send" onclick="askSectionQuestion('activity')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-activity"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- BODY TEMPERATURE -->
@@ -1620,7 +1716,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="section-ask" id="ask-temperature"></div>
+                <div class="section-ask">
+                    <button class="ask-toggle" onclick="toggleAskPanel('temperature')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about Temperature
+                    </button>
+                    <div class="ask-panel" id="ask-panel-temperature">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('temperature','What does temperature deviation mean?')">What does temperature deviation mean?</button>
+                            <button class="ask-chip" onclick="askSectionChip('temperature','Should I be concerned about my temp trend?')">Should I be concerned?</button>
+                            <button class="ask-chip" onclick="askSectionChip('temperature','How does temperature relate to illness?')">Temperature & illness</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-temperature" placeholder="Ask anything about your temperature data…" onkeydown="if(event.key==='Enter')askSectionQuestion('temperature')">
+                            <button class="ask-send" onclick="askSectionQuestion('temperature')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-temperature"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- SPO2 -->
@@ -1634,7 +1754,31 @@
                         <div class="spinner"></div>
                     </div>
                 </div>
-                <div class="section-ask" id="ask-spo2"></div>
+                <div class="section-ask">
+                    <button class="ask-toggle" onclick="toggleAskPanel('spo2')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about Blood Oxygen
+                    </button>
+                    <div class="ask-panel" id="ask-panel-spo2">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('spo2','Is my SpO₂ normal?')">Is my SpO₂ normal?</button>
+                            <button class="ask-chip" onclick="askSectionChip('spo2','What causes low blood oxygen?')">What causes low blood oxygen?</button>
+                            <button class="ask-chip" onclick="askSectionChip('spo2','When should I worry about SpO₂?')">When should I worry?</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-spo2" placeholder="Ask anything about your SpO₂ data…" onkeydown="if(event.key==='Enter')askSectionQuestion('spo2')">
+                            <button class="ask-send" onclick="askSectionQuestion('spo2')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-spo2"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- WEEKLY SUMMARY -->
@@ -1655,7 +1799,31 @@
                                 
                     </div>
                 </div>
-                <div class="section-ask" id="ask-summary"></div>
+                <div class="section-ask" style="margin-top:14px;">
+                    <button class="ask-toggle" onclick="toggleAskPanel('summary')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                            <path d="M11 5h2v5h-2zm0 7h2v2h-2z"/>
+                        </svg>
+                         Ask about your week
+                    </button>
+                    <div class="ask-panel" id="ask-panel-summary">
+                        <div class="ask-chips">
+                            <button class="ask-chip" onclick="askSectionChip('summary','What should I focus on this week?')">What to focus on</button>
+                            <button class="ask-chip" onclick="askSectionChip('summary','Compare this week to my recent trend')">Compare to recent trend</button>
+                            <button class="ask-chip" onclick="askSectionChip('summary','What is my biggest improvement area?')">Biggest improvement area</button>
+                        </div>
+                        <div class="ask-input-row">
+                            <input class="ask-input" id="ask-input-summary" placeholder="Ask anything about your weekly summary…" onkeydown="if(event.key==='Enter')askSectionQuestion('summary')">
+                            <button class="ask-send" onclick="askSectionQuestion('summary')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="ask-reply-summary"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- RECOMMENDATIONS -->
@@ -1739,7 +1907,7 @@
     // ═══════════════════════════════════════
     // CONFIG — Anthropic API key (embedded for chat feature)
     // ═══════════════════════════════════════
-    const ANTHROPIC_KEY = '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';
+    const ANTHROPIC_KEY = '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';
 
     // ═══════════════════════════════════════
     // STATE
@@ -2038,11 +2206,6 @@
         } catch (e) {
             console.error('Recs error:', e);
             document.getElementById('recs-grid').innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:12px">Recommendations could not be generated. Check console for details.</div>';
-        }
-        try {
-            initSectionAskBars();
-        } catch (e) {
-            console.error('Ask bars error:', e);
         }
     }
 
@@ -2670,7 +2833,6 @@
     var sectionConfig = {
         sleep: {
             label: 'Sleep',
-            chips: ['Why is my deep sleep low?', 'What affects sleep efficiency?', 'How can I improve my sleep score?'],
             contextFn: function() {
                 var sessions = filterByDays((healthData.sleep || []).filter(function(s) {
                     return s.type === 'long_sleep';
@@ -2697,7 +2859,6 @@
         },
         readiness: {
             label: 'Readiness & HRV',
-            chips: ['What is HRV balance?', 'Why is my readiness dropping?', 'How does resting HR relate to recovery?'],
             contextFn: function() {
                 var r = filterByDays(healthData.readiness || [], dashDays);
                 return 'Readiness data (' + dashDays + ' days): ' + JSON.stringify(r.map(function(x) {
@@ -2714,7 +2875,6 @@
         },
         heartrate: {
             label: 'Heart Rate',
-            chips: ['Is my resting HR normal?', 'What causes RHR to spike?', 'How can I lower my resting heart rate?'],
             contextFn: function() {
                 var r = filterByDays(healthData.readiness || [], dashDays);
                 var rhr = r.map(function(x) {
@@ -2730,7 +2890,6 @@
         },
         activity: {
             label: 'Activity',
-            chips: ['Am I active enough?', 'How do my steps compare to recommended?', 'Does activity affect my sleep?'],
             contextFn: function() {
                 var a = filterByDays(healthData.activity || [], dashDays);
                 return 'Activity data (' + dashDays + ' days): ' + JSON.stringify(a.map(function(x) {
@@ -2746,7 +2905,6 @@
         },
         temperature: {
             label: 'Body Temperature',
-            chips: ['What does temperature deviation mean?', 'Should I be concerned about my temp trend?', 'How does temperature relate to illness?'],
             contextFn: function() {
                 var r = filterByDays(healthData.readiness || [], dashDays);
                 var temps = r.map(function(x) {
@@ -2763,10 +2921,9 @@
         },
         spo2: {
             label: 'Blood Oxygen',
-            chips: ['Is my SpO₂ normal?', 'What causes low blood oxygen?', 'When should I worry about SpO₂?'],
             contextFn: function() {
                 var spo2 = filterByDays(healthData.spo2 || [], dashDays);
-                return 'SpO₂ data (' + dashDays + ' days): ' + JSON.stringify(spo2.map(function(x) {
+                return 'SpO2 data (' + dashDays + ' days): ' + JSON.stringify(spo2.map(function(x) {
                     return {
                         date: x.day,
                         avg_pct:x.spo2_percentage?.average
@@ -2776,33 +2933,11 @@
         },
         summary: {
             label: 'Weekly Summary',
-            chips: ['What should I focus on this week?', 'Compare this week to my recent trend', 'What is my biggest improvement area?'],
             contextFn: function() {
                 return 'Full weekly snapshot: ' + JSON.stringify(buildWeeklySnapshot());
             }
         }
     };
-
-    function initSectionAskBars() {
-        Object.keys(sectionConfig).forEach(function(key) {
-            var el = document.getElementById('ask-' + key);
-            if (!el)
-                return;
-            var cfg = sectionConfig[key];
-            el.innerHTML =
-            '<button class="ask-toggle" onclick="toggleAskPanel(\'' + key + '\')">' + askIcon + ' Ask about ' + cfg.label + '</button>' +
-            '<div class="ask-panel" id="ask-panel-' + key + '">' +
-            '<div class="ask-chips">' + cfg.chips.map(function(c) {
-                return '<button class="ask-chip" onclick="askSectionChip(\'' + key + '\',this.textContent)">' + c + '</button>';
-            }).join('') + '</div>' +
-            '<div class="ask-input-row">' +
-            '<input class="ask-input" id="ask-input-' + key + '" placeholder="Ask anything about your ' + cfg.label.toLowerCase() + ' data…" onkeydown="if(event.key===\'Enter\')askSectionQuestion(\'' + key + '\')">' +
-            '<button class="ask-send" onclick="askSectionQuestion(\'' + key + '\')">' + sendIcon + '</button>' +
-            '</div>' +
-            '<div id="ask-reply-' + key + '"></div>' +
-            '</div>';
-        });
-    }
 
     function toggleAskPanel(key) {
         var panel = document.getElementById('ask-panel-' + key);
