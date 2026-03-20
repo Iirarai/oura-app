@@ -218,9 +218,11 @@ textarea::placeholder{color:var(--muted);}
     <p>Enter your personal access token from <a href="https://cloud.ouraring.com/personal-access-tokens" target="_blank">cloud.ouraring.com</a> to begin.</p>
     <label class="field-label">Oura Personal Access Token</label>
     <input class="field-input" type="password" id="oura-token" placeholder="Your Oura token…"/>
+    <label class="field-label">Anthropic API Key</label>
+    <input class="field-input" type="password" id="anthropic-key" placeholder="sk-ant-…"/>
     <button class="btn-connect" id="connect-btn" onclick="connectApp()">Begin</button>
     <div id="setup-error"></div>
-    <div class="setup-note">🔒 Your token is stored only in your browser session and sent only to Oura's official API.</div>
+    <div class="setup-note">🔒 Both keys are stored only in your browser session — never saved anywhere or sent to anyone except Oura and Anthropic's official APIs.</div>
   </div>
 </div>
 
@@ -373,7 +375,7 @@ textarea::placeholder{color:var(--muted);}
 // ═══════════════════════════════════════
 // CONFIG — paste your Anthropic API key here
 // ═══════════════════════════════════════
-const ANTHROPIC_KEY = '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';
+let ANTHROPIC_KEY = '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';
 
 // ═══════════════════════════════════════
 // STATE
@@ -386,8 +388,9 @@ const PROXY='https://corsproxy.io/?url=', enc=encodeURIComponent;
 // ═══════════════════════════════════════
 async function connectApp() {
   ouraToken=document.getElementById('oura-token').value.trim();
+  ANTHROPIC_KEY=document.getElementById('anthropic-key').value.trim();
   const errEl=document.getElementById('setup-error'); errEl.innerHTML='';
-  if(!ouraToken){errEl.innerHTML='<div class="err">Please enter your Oura token.</div>';return;}
+  if(!ouraToken||!ANTHROPIC_KEY){errEl.innerHTML='<div class="err">Please enter both your Oura token and Anthropic API key.</div>';return;}
   const btn=document.getElementById('connect-btn'); btn.disabled=true; btn.textContent='Connecting…';
   try {
     document.getElementById('setup-screen').style.display='none';
@@ -767,13 +770,26 @@ function buildWeeklySnapshot() {
 async function generateWeeklySummary() {
   document.getElementById('summary-body').innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.85rem"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>&nbsp;Composing your summary…</div>';
   try {
+    // Test the key first with a minimal call
+    const testRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:50,messages:[{role:'user',content:'Say OK'}]})
+    });
+    if(!testRes.ok) {
+      const errData = await testRes.json();
+      throw new Error(`${testRes.status}: ${errData.error?.message||'Unknown error'}`);
+    }
     const reply=await callClaude(
       'You are a calm, thoughtful health companion. Write a warm, insightful weekly summary in 3-4 sentences covering sleep, readiness, HRV, and activity. Be specific with numbers. Use **bold** for key numbers. Tone: measured, honest, Nordic calm.',
       `Weekly health data: ${JSON.stringify(buildWeeklySnapshot())}`, 400
     );
     document.getElementById('summary-body').innerHTML='<p>'+reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</p>';
   } catch(e) {
-    document.getElementById('summary-body').innerHTML=`<p style="color:var(--muted)">Summary unavailable: ${e.message}</p>`;
+    console.error('Summary error:', e);
+    document.getElementById('summary-body').innerHTML=`
+      <p style="color:var(--muted);font-size:0.85rem">Error: ${e.message}</p>
+      <button onclick="generateWeeklySummary()" style="margin-top:10px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--fjord);font-family:'Instrument Sans',sans-serif;font-size:0.78rem;cursor:pointer;">↻ Try again</button>`;
   }
 }
 
