@@ -808,12 +808,13 @@ async function loadOuraData() {
   const startStr = start.toISOString().split('T')[0];
   const endStr = end.toISOString().split('T')[0];
 
+  const PROXY = 'https://corsproxy.io/?url=';
   const headers = { 'Authorization': `Bearer ${ouraToken}` };
 
   const [sleepRes, readinessRes, heartRateRes] = await Promise.all([
-    fetch(`https://api.ouraring.com/v2/usercollection/sleep?start_date=${startStr}&end_date=${endStr}`, { headers }),
-    fetch(`https://api.ouraring.com/v2/usercollection/daily_readiness?start_date=${startStr}&end_date=${endStr}`, { headers }),
-    fetch(`https://api.ouraring.com/v2/usercollection/heartrate?start_datetime=${startStr}T00:00:00&end_datetime=${endStr}T23:59:59`, { headers })
+    fetch(`${PROXY}${encodeURIComponent(`https://api.ouraring.com/v2/usercollection/sleep?start_date=${startStr}&end_date=${endStr}`)}`, { headers }),
+    fetch(`${PROXY}${encodeURIComponent(`https://api.ouraring.com/v2/usercollection/daily_readiness?start_date=${startStr}&end_date=${endStr}`)}`, { headers }),
+    fetch(`${PROXY}${encodeURIComponent(`https://api.ouraring.com/v2/usercollection/heartrate?start_datetime=${startStr}T00:00:00&end_datetime=${endStr}T23:59:59`)}`, { headers })
   ]);
 
   if (!sleepRes.ok) throw new Error('Could not connect to Oura. Check your token and try again.');
