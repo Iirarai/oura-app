@@ -218,11 +218,9 @@ textarea::placeholder{color:var(--muted);}
     <p>Enter your personal access token from <a href="https://cloud.ouraring.com/personal-access-tokens" target="_blank">cloud.ouraring.com</a> to begin.</p>
     <label class="field-label">Oura Personal Access Token</label>
     <input class="field-input" type="password" id="oura-token" placeholder="Your Oura token…"/>
-    <label class="field-label">Anthropic API Key</label>
-    <input class="field-input" type="password" id="anthropic-key" placeholder="sk-ant-…"/>
     <button class="btn-connect" id="connect-btn" onclick="connectApp()">Begin</button>
     <div id="setup-error"></div>
-    <div class="setup-note">🔒 Both keys are stored only in your browser session — never saved anywhere or sent to anyone except Oura and Anthropic's official APIs.</div>
+    <div class="setup-note">🔒 Your token is stored only in your browser session — never saved anywhere or sent to anyone except Oura's official API.</div>
   </div>
 </div>
 
@@ -373,9 +371,9 @@ textarea::placeholder{color:var(--muted);}
 
 <script>
 // ═══════════════════════════════════════
-// CONFIG — paste your Anthropic API key here
+// CONFIG — Anthropic API key (embedded for chat feature)
 // ═══════════════════════════════════════
-let ANTHROPIC_KEY = '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';
+const ANTHROPIC_KEY = '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';
 
 // ═══════════════════════════════════════
 // STATE
@@ -388,9 +386,8 @@ const PROXY='https://corsproxy.io/?url=', enc=encodeURIComponent;
 // ═══════════════════════════════════════
 async function connectApp() {
   ouraToken=document.getElementById('oura-token').value.trim();
-  ANTHROPIC_KEY=document.getElementById('anthropic-key').value.trim();
   const errEl=document.getElementById('setup-error'); errEl.innerHTML='';
-  if(!ouraToken||!ANTHROPIC_KEY){errEl.innerHTML='<div class="err">Please enter both your Oura token and Anthropic API key.</div>';return;}
+  if(!ouraToken){errEl.innerHTML='<div class="err">Please enter your Oura personal access token.</div>';return;}
   const btn=document.getElementById('connect-btn'); btn.disabled=true; btn.textContent='Connecting…';
   try {
     document.getElementById('setup-screen').style.display='none';
@@ -767,54 +764,194 @@ function buildWeeklySnapshot() {
   };
 }
 
-async function generateWeeklySummary() {
-  document.getElementById('summary-body').innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.85rem"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>&nbsp;Composing your summary…</div>';
-  try {
-    // Test the key first with a minimal call
-    const testRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:50,messages:[{role:'user',content:'Say OK'}]})
-    });
-    if(!testRes.ok) {
-      const errData = await testRes.json();
-      throw new Error(`${testRes.status}: ${errData.error?.message||'Unknown error'}`);
-    }
-    const reply=await callClaude(
-      'You are a calm, thoughtful health companion. Write a warm, insightful weekly summary in 3-4 sentences covering sleep, readiness, HRV, and activity. Be specific with numbers. Use **bold** for key numbers. Tone: measured, honest, Nordic calm.',
-      `Weekly health data: ${JSON.stringify(buildWeeklySnapshot())}`, 400
-    );
-    document.getElementById('summary-body').innerHTML='<p>'+reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</p>';
-  } catch(e) {
-    console.error('Summary error:', e);
-    document.getElementById('summary-body').innerHTML=`
-      <p style="color:var(--muted);font-size:0.85rem">Error: ${e.message}</p>
-      <button onclick="generateWeeklySummary()" style="margin-top:10px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--fjord);font-family:'Instrument Sans',sans-serif;font-size:0.78rem;cursor:pointer;">↻ Try again</button>`;
+function generateWeeklySummary() {
+  const snap = buildWeeklySnapshot();
+  const sleepScores = snap.sleep.map(x=>x.score).filter(Boolean);
+  const readScores = snap.readiness.map(x=>x.score).filter(Boolean);
+  const hrvScores = snap.readiness.map(x=>x.hrv_balance).filter(Boolean);
+  const rhrScores = snap.readiness.map(x=>x.resting_hr).filter(Boolean);
+  const stepCounts = snap.activity.map(x=>x.steps).filter(Boolean);
+  const actScores = snap.activity.map(x=>x.score).filter(Boolean);
+  const deepPcts = snap.sleep_detail.map(x=>x.deep_pct).filter(Boolean);
+  const remPcts = snap.sleep_detail.map(x=>x.rem_pct).filter(Boolean);
+  const hours = snap.sleep_detail.map(x=>x.hours).filter(Boolean);
+  const effs = snap.sleep_detail.map(x=>x.efficiency).filter(Boolean);
+
+  const a = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : 0;
+  const tier = s => s>=85?'optimal':s>=70?'good':'needs attention';
+
+  const avgSleep = Math.round(a(sleepScores));
+  const avgRead = Math.round(a(readScores));
+  const avgHrv = Math.round(a(hrvScores));
+  const avgRhr = Math.round(a(rhrScores));
+  const avgSteps = Math.round(a(stepCounts));
+  const avgAct = Math.round(a(actScores));
+  const avgDeep = Math.round(a(deepPcts));
+  const avgRem = Math.round(a(remPcts));
+  const avgHrs = a(hours).toFixed(1);
+  const avgEff = Math.round(a(effs));
+
+  // Find best & worst days
+  const bestSleep = snap.sleep.reduce((b,x) => (x.score||0)>(b.score||0)?x:b, {score:0});
+  const worstSleep = snap.sleep.filter(x=>x.score).reduce((w,x) => x.score<w.score?x:w, {score:999});
+  const bestRead = snap.readiness.reduce((b,x) => (x.score||0)>(b.score||0)?x:b, {score:0});
+
+  // Trend: compare last 3 days vs first 4 days
+  const recentSleep = sleepScores.slice(-3);
+  const earlierSleep = sleepScores.slice(0, -3);
+  const sleepTrend = recentSleep.length && earlierSleep.length ? a(recentSleep) - a(earlierSleep) : 0;
+  const recentRead = readScores.slice(-3);
+  const earlierRead = readScores.slice(0, -3);
+  const readTrend = recentRead.length && earlierRead.length ? a(recentRead) - a(earlierRead) : 0;
+
+  let lines = [];
+
+  // Sleep sentence
+  if(sleepScores.length) {
+    let sleepSentence = `Your sleep averaged <strong>${avgSleep}</strong> (${tier(avgSleep)}) across ${sleepScores.length} nights, with <strong>${avgHrs}h</strong> of sleep per night`;
+    if(avgEff) sleepSentence += ` at <strong>${avgEff}%</strong> efficiency`;
+    sleepSentence += '.';
+    if(avgDeep || avgRem) sleepSentence += ` Sleep stages: <strong>${avgDeep}%</strong> deep, <strong>${avgRem}%</strong> REM.`;
+    if(Math.abs(sleepTrend) > 3) sleepSentence += sleepTrend > 0 ? ` Scores have been <em>trending upward</em> in recent days.` : ` Scores have <em>dipped</em> toward the end of the week.`;
+    lines.push(sleepSentence);
   }
+
+  // Readiness & HRV sentence
+  if(readScores.length) {
+    let readSentence = `Readiness sat at <strong>${avgRead}</strong> (${tier(avgRead)})`;
+    if(avgHrv) readSentence += ` with HRV balance at <strong>${avgHrv}</strong>`;
+    if(avgRhr) readSentence += ` and resting heart rate averaging <strong>${avgRhr} bpm</strong>`;
+    readSentence += '.';
+    if(Math.abs(readTrend) > 3) readSentence += readTrend > 0 ? ' Recovery has been <em>improving</em>.' : ' Recovery has been <em>declining</em> — consider extra rest.';
+    lines.push(readSentence);
+  }
+
+  // Activity sentence
+  if(stepCounts.length) {
+    let actSentence = `You averaged <strong>${avgSteps.toLocaleString()} steps</strong> daily`;
+    if(avgAct) actSentence += ` with an activity score of <strong>${avgAct}</strong>`;
+    actSentence += '.';
+    const maxStepDay = snap.activity.reduce((b,x) => (x.steps||0)>(b.steps||0)?x:b, {steps:0});
+    if(maxStepDay.date) actSentence += ` Most active day was <strong>${new Date(maxStepDay.date).toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'})}</strong> with ${maxStepDay.steps.toLocaleString()} steps.`;
+    lines.push(actSentence);
+  }
+
+  // Highlight sentence
+  if(bestSleep.score && worstSleep.score < 999) {
+    let hlSentence = `Best night: <strong>${bestSleep.score}</strong> on ${new Date(bestSleep.date).toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'})}`;
+    hlSentence += ` · lowest: <strong>${worstSleep.score}</strong> on ${new Date(worstSleep.date).toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'})}.`;
+    lines.push(hlSentence);
+  }
+
+  if(!lines.length) {
+    document.getElementById('summary-body').innerHTML='<p style="color:var(--muted);">Not enough data for a weekly summary yet. Keep wearing your ring!</p>';
+    return;
+  }
+
+  document.getElementById('summary-body').innerHTML = lines.map(l=>`<p>${l}</p>`).join('');
 }
 
-async function generateRecommendations() {
-  const snap=buildWeeklySnapshot();
-  const summary={
-    avg_sleep: Math.round(avg(snap.sleep.map(x=>x.score).filter(Boolean))),
-    avg_readiness: Math.round(avg(snap.readiness.map(x=>x.score).filter(Boolean))),
-    avg_hrv: Math.round(avg(snap.readiness.map(x=>x.hrv_balance).filter(Boolean))),
-    avg_rhr: Math.round(avg(snap.readiness.map(x=>x.resting_hr).filter(Boolean))),
-    avg_steps: Math.round(avg(snap.activity.map(x=>x.steps).filter(Boolean))),
-    avg_deep_pct: Math.round(avg(snap.sleep_detail.map(x=>x.deep_pct).filter(Boolean))),
-    avg_rem_pct: Math.round(avg(snap.sleep_detail.map(x=>x.rem_pct).filter(Boolean))),
-    avg_temp_dev: +(avg(snap.readiness.map(x=>x.body_temp).filter(Boolean))).toFixed(2),
-  };
-  try {
-    const reply=await callClaude(
-      'You are a health coach. Respond ONLY with a valid JSON array — no markdown, no code fences. Format: [{"icon":"emoji","title":"short title","body":"1-2 sentences specific actionable advice","priority":"high|medium|low"}]',
-      `Generate 3 personalised recommendations: ${JSON.stringify(summary)}`, 500
-    );
-    const recs=JSON.parse(reply.replace(/```json|```/g,'').trim());
-    document.getElementById('recs-grid').innerHTML=recs.map(r=>`<div class="rec-card"><span class="rec-icon">${r.icon}</span><div class="rec-title">${r.title}</div><div class="rec-body">${r.body}</div><span class="rec-tag ${r.priority==='high'?'tag-high':r.priority==='medium'?'tag-medium':'tag-low'}">${r.priority}</span></div>`).join('');
-  } catch(e) {
-    document.getElementById('recs-grid').innerHTML=`<div style="color:var(--muted);font-size:0.8rem;padding:12px">Recommendations unavailable: ${e.message}</div>`;
+function generateRecommendations() {
+  const snap = buildWeeklySnapshot();
+  const a = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : 0;
+
+  const avgSleep = Math.round(a(snap.sleep.map(x=>x.score).filter(Boolean)));
+  const avgRead = Math.round(a(snap.readiness.map(x=>x.score).filter(Boolean)));
+  const avgHrv = Math.round(a(snap.readiness.map(x=>x.hrv_balance).filter(Boolean)));
+  const avgRhr = Math.round(a(snap.readiness.map(x=>x.resting_hr).filter(Boolean)));
+  const avgSteps = Math.round(a(snap.activity.map(x=>x.steps).filter(Boolean)));
+  const avgDeep = Math.round(a(snap.sleep_detail.map(x=>x.deep_pct).filter(Boolean)));
+  const avgRem = Math.round(a(snap.sleep_detail.map(x=>x.rem_pct).filter(Boolean)));
+  const avgHrs = a(snap.sleep_detail.map(x=>x.hours).filter(Boolean));
+  const avgEff = Math.round(a(snap.sleep_detail.map(x=>x.efficiency).filter(Boolean)));
+  const avgTemp = a(snap.readiness.map(x=>x.body_temp).filter(Boolean));
+
+  // Score variance (consistency check)
+  const sleepScores = snap.sleep.map(x=>x.score).filter(Boolean);
+  const variance = sleepScores.length > 1 ? Math.sqrt(a(sleepScores.map(s => Math.pow(s - avgSleep, 2)))) : 0;
+
+  const recs = [];
+
+  // Sleep score recommendations
+  if(avgSleep && avgSleep < 70) {
+    recs.push({icon:'🌙', title:'Prioritise sleep recovery', body:`Your sleep score averaged ${avgSleep} this week — below the optimal range. Try setting a consistent bedtime, keeping the room cool (18°C), and avoiding screens 1 hour before bed.`, priority:'high'});
+  } else if(avgSleep && avgSleep < 85) {
+    recs.push({icon:'🌙', title:'Fine-tune your sleep', body:`Sleep score of ${avgSleep} is good but has room to grow. Small wins: keep a consistent wake time, get morning sunlight within 30 minutes of rising, and limit caffeine after noon.`, priority:'medium'});
   }
+
+  // Deep sleep
+  if(avgDeep && avgDeep < 15) {
+    recs.push({icon:'💎', title:'Boost deep sleep', body:`Deep sleep at ${avgDeep}% is below the 15-20% target. Regular exercise (but not within 3h of bed), a cooler bedroom, and limiting alcohol can increase deep sleep stages.`, priority:'high'});
+  } else if(avgDeep && avgDeep < 20) {
+    recs.push({icon:'💎', title:'Deepen your rest', body:`Deep sleep at ${avgDeep}% is decent. Magnesium-rich foods, consistent exercise timing, and a pitch-dark room can push this toward the optimal 20%+ range.`, priority:'low'});
+  }
+
+  // REM sleep
+  if(avgRem && avgRem < 18) {
+    recs.push({icon:'🧠', title:'Support REM sleep', body:`REM at ${avgRem}% is on the low side (target: 20-25%). Reduce alcohol, manage stress with evening breathwork, and ensure you're sleeping long enough — REM concentrates in the later hours.`, priority:'medium'});
+  }
+
+  // Sleep duration
+  if(avgHrs && avgHrs < 7) {
+    recs.push({icon:'⏰', title:'Extend sleep duration', body:`Averaging ${avgHrs.toFixed(1)}h per night — below the recommended 7-9 hours. Even 30 extra minutes can meaningfully improve recovery and cognitive function.`, priority:'high'});
+  }
+
+  // Sleep consistency
+  if(variance > 8) {
+    recs.push({icon:'📊', title:'Improve sleep consistency', body:`Your sleep scores varied significantly this week (±${Math.round(variance)} points). Consistent bed and wake times — even on weekends — help stabilise your circadian rhythm.`, priority:'medium'});
+  }
+
+  // Readiness
+  if(avgRead && avgRead < 70) {
+    recs.push({icon:'🔋', title:'Focus on recovery', body:`Readiness at ${avgRead} suggests your body needs more recovery. Consider lighter exercise, extra hydration, and an earlier bedtime for the next few days.`, priority:'high'});
+  } else if(avgRead && avgRead >= 85) {
+    recs.push({icon:'✨', title:'Great recovery — push a bit', body:`Readiness at ${avgRead} is excellent. Your body is well-recovered — a good window for higher-intensity training or challenging workouts.`, priority:'low'});
+  }
+
+  // HRV
+  if(avgHrv && avgHrv < 65) {
+    recs.push({icon:'💚', title:'Support your HRV', body:`HRV balance at ${avgHrv} is below optimal. Gentle breathwork (4-7-8 pattern), regular moderate exercise, and stress management can help improve autonomic balance.`, priority:'medium'});
+  }
+
+  // Resting HR
+  if(avgRhr && avgRhr > 70) {
+    recs.push({icon:'❤️', title:'Watch resting heart rate', body:`Resting HR averaging ${avgRhr} bpm is slightly elevated. This can reflect stress, dehydration, or insufficient recovery. Prioritise hydration and restorative sleep.`, priority:'medium'});
+  }
+
+  // Activity / Steps
+  if(avgSteps && avgSteps < 5000) {
+    recs.push({icon:'🚶', title:'Increase daily movement', body:`At ${avgSteps.toLocaleString()} steps daily, there's room to move more. Even short 10-minute walks after meals can improve metabolism, mood, and sleep quality.`, priority:'high'});
+  } else if(avgSteps && avgSteps < 8000) {
+    recs.push({icon:'🚶', title:'Add more walking', body:`${avgSteps.toLocaleString()} steps is a decent base. Try adding a 20-minute morning or evening walk to reach 8,000+ — a threshold strongly linked to better cardiovascular health.`, priority:'medium'});
+  } else if(avgSteps && avgSteps >= 10000) {
+    recs.push({icon:'🏃', title:'Excellent activity level', body:`Averaging ${avgSteps.toLocaleString()} steps — that's strong. Make sure you're balancing with adequate recovery; watch your readiness score for signs of overtraining.`, priority:'low'});
+  }
+
+  // Temperature
+  if(avgTemp && avgTemp < 60) {
+    recs.push({icon:'🌡️', title:'Monitor temperature trend', body:`Your body temperature contributor score is lower than usual. This can indicate immune stress or the onset of illness. Extra rest and hydration are wise precautions.`, priority:'medium'});
+  }
+
+  // Sleep efficiency
+  if(avgEff && avgEff < 85) {
+    recs.push({icon:'🛏️', title:'Improve sleep efficiency', body:`Sleep efficiency at ${avgEff}% means time in bed isn't fully translating to sleep. Avoid lying in bed awake — get up after 20 minutes if you can't sleep, then return when drowsy.`, priority:'medium'});
+  }
+
+  // Fallback if very little data
+  if(!recs.length) {
+    recs.push({icon:'📱', title:'Keep wearing your ring', body:'Wear your Oura ring consistently to build up enough data for personalised recommendations. A full week of data helps identify patterns.', priority:'low'});
+    recs.push({icon:'☀️', title:'Morning sunlight', body:'Getting 10-15 minutes of natural sunlight within the first hour of waking is one of the most reliable ways to improve sleep quality and circadian rhythm.', priority:'low'});
+    recs.push({icon:'💧', title:'Stay hydrated', body:'Aim for 2-3 litres of water throughout the day. Dehydration can elevate resting heart rate and impair recovery without obvious symptoms.', priority:'low'});
+  }
+
+  // Limit to top 3, prioritising by severity
+  const pOrder = {high:0, medium:1, low:2};
+  recs.sort((a,b) => pOrder[a.priority] - pOrder[b.priority]);
+  const top3 = recs.slice(0, 3);
+
+  document.getElementById('recs-grid').innerHTML = top3.map(r =>
+    `<div class="rec-card"><span class="rec-icon">${r.icon}</span><div class="rec-title">${r.title}</div><div class="rec-body">${r.body}</div><span class="rec-tag ${r.priority==='high'?'tag-high':r.priority==='medium'?'tag-medium':'tag-low'}">${r.priority}</span></div>`
+  ).join('');
 }
 
 // ═══════════════════════════════════════
