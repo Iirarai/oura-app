@@ -373,7 +373,7 @@ textarea::placeholder{color:var(--muted);}
 // ═══════════════════════════════════════
 // CONFIG — paste your Anthropic API key here
 // ═══════════════════════════════════════
-const ANTHROPIC_KEY = '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';
+const ANTHROPIC_KEY = 'PASTE_YOUR_KEY_HERE';
 
 // ═══════════════════════════════════════
 // STATE
@@ -627,21 +627,30 @@ function renderReadinessSection() {
 
 /* ── HEART RATE ── */
 function renderHRSection() {
-  const rhr=filterByDays(healthData.dailyRestingHR||[], dashDays, x=>x.day);
-  const avgRHR=avg(rhr.map(x=>x.bpm).filter(Boolean));
-  const minRHR=rhr.length?Math.min(...rhr.map(x=>x.bpm).filter(Boolean)):null;
-  const maxRHR=rhr.length?Math.max(...rhr.map(x=>x.bpm).filter(Boolean)):null;
+  // Use resting HR directly from readiness contributors — most accurate source
+  const r=filterByDays(healthData.readiness||[], dashDays);
+  const rhr=r.map(x=>({day:x.day, bpm:x.contributors?.resting_heart_rate})).filter(x=>x.bpm);
+
+  if(!rhr.length) {
+    document.getElementById('hr-kpis').innerHTML='<div style="color:var(--muted);font-size:0.8rem;padding:8px;grid-column:span 3">No heart rate data available for this period.</div>';
+    return;
+  }
+
+  const avgRHR=avg(rhr.map(x=>x.bpm));
+  const minRHR=Math.min(...rhr.map(x=>x.bpm));
+  const maxRHR=Math.max(...rhr.map(x=>x.bpm));
+  const latestRHR=rhr[rhr.length-1]?.bpm;
 
   document.getElementById('hr-kpis').innerHTML=
-    mkKPI('var(--ember)','Avg Resting HR',avgRHR?`${Math.round(avgRHR)} bpm`:'—',`${dashDays}d avg`)+
-    mkKPI('var(--sage)','Lowest',minRHR?`${minRHR} bpm`:'—','best recovery')+
-    mkKPI('var(--birch)','Highest',maxRHR?`${maxRHR} bpm`:'—','peak resting');
+    mkKPI('var(--ember)','Avg Resting HR',`${Math.round(avgRHR)} bpm`,`${dashDays}d avg`)+
+    mkKPI('var(--sage)','Lowest',`${minRHR} bpm`,'best recovery day')+
+    mkKPI('var(--birch)','Latest',latestRHR?`${latestRHR} bpm`:'—',rhr[rhr.length-1]?.day||'');
 
   if(charts.rhr) charts.rhr.destroy();
   charts.rhr=new Chart(document.getElementById('chart-rhr'),{
     type:'line',
     data:{labels:rhr.map(x=>chartLabel(x.day)),datasets:[{data:rhr.map(x=>x.bpm),borderColor:'rgba(194,123,90,0.8)',backgroundColor:'rgba(194,123,90,0.07)',tension:0.4,fill:true,pointRadius:2,pointBackgroundColor:'rgba(194,123,90,1)',pointBorderColor:'white',pointBorderWidth:1.5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw} bpm`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw} bpm`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}},suggestedMin:40,suggestedMax:80}}}
   });
 
   document.getElementById('hr-charts').style.display='grid';
@@ -681,22 +690,34 @@ function renderActivitySection() {
 /* ── TEMPERATURE ── */
 function renderTempSection() {
   const r=filterByDays(healthData.readiness||[], dashDays);
-  const temps=r.map(x=>({day:x.day, dev:x.contributors?.body_temperature})).filter(x=>x.dev!=null);
+  // temperature_deviation = actual °C deviation from baseline (small numbers like +0.2, -0.1)
+  // contributors.body_temperature = a 0-100 score, NOT a temperature — don't use for display
+  const temps=r.map(x=>({
+    day: x.day,
+    dev: x.temperature_deviation ?? x.temperature_trend_deviation ?? null
+  })).filter(x=>x.dev!=null);
+
+  if(!temps.length) {
+    document.getElementById('temp-kpis').innerHTML='<div style="color:var(--muted);font-size:0.8rem;padding:8px;grid-column:span 3">Temperature deviation data not available. Oura Gen 3 required, and data may take a few nights to appear.</div>';
+    document.getElementById('chart-temp').parentElement.parentElement.style.display='none';
+    return;
+  }
+
   const avgDev=avg(temps.map(x=>x.dev));
-  const minDev=temps.length?Math.min(...temps.map(x=>x.dev)):null;
-  const maxDev=temps.length?Math.max(...temps.map(x=>x.dev)):null;
+  const minDev=Math.min(...temps.map(x=>x.dev));
+  const maxDev=Math.max(...temps.map(x=>x.dev));
 
   document.getElementById('temp-kpis').innerHTML=
-    mkKPI('var(--aurora)','Avg Deviation',avgDev?`${avgDev.toFixed(2)}°C`:'—','from your baseline')+
-    mkKPI('var(--sage)','Lowest',minDev!=null?`${minDev.toFixed(2)}°C`:'—','coolest night')+
-    mkKPI('var(--ember)','Highest',maxDev!=null?`${maxDev.toFixed(2)}°C`:'—','warmest night');
+    mkKPI('var(--aurora)','Avg Deviation',`${avgDev>=0?'+':''}${avgDev.toFixed(2)}°C`,'from your baseline')+
+    mkKPI('var(--fjord)','Lowest',`${minDev>=0?'+':''}${minDev.toFixed(2)}°C`,'coolest night')+
+    mkKPI('var(--ember)','Highest',`${maxDev>=0?'+':''}${maxDev.toFixed(2)}°C`,'warmest night');
 
   if(charts.temp) charts.temp.destroy();
-  const tempColors=temps.map(x=>x.dev>0.5?'rgba(194,123,90,0.7)':x.dev<-0.5?'rgba(74,124,142,0.7)':'rgba(107,143,113,0.6)');
+  const tempColors=temps.map(x=>x.dev>0.3?'rgba(194,123,90,0.7)':x.dev<-0.3?'rgba(74,124,142,0.7)':'rgba(107,143,113,0.6)');
   charts.temp=new Chart(document.getElementById('chart-temp'),{
     type:'bar',
-    data:{labels:temps.map(x=>chartLabel(x.day)),datasets:[{data:temps.map(x=>x.dev),backgroundColor:tempColors,borderRadius:3,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw?.toFixed(2)}°C`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9}},suggestedMin:-1.5,suggestedMax:1.5}}}
+    data:{labels:temps.map(x=>chartLabel(x.day)),datasets:[{data:temps.map(x=>+x.dev.toFixed(2)),backgroundColor:tempColors,borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CHART_DEFAULTS.tooltip,callbacks:{label:c=>` ${c.raw>=0?'+':''}${c.raw}°C`}}},scales:{x:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},maxTicksLimit:10}},y:{grid:{color:CHART_DEFAULTS.grid},ticks:{color:CHART_DEFAULTS.tick,font:{size:9},callback:v=>`${v>=0?'+':''}${v.toFixed(1)}°C`},suggestedMin:-1.5,suggestedMax:1.5}}}
   });
 }
 
